@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface Team {
   id: number;
@@ -8,8 +8,8 @@ interface Team {
 
 interface Country {
   name: string;
-  code: string;
-  flag: string;
+  code: string | null;
+  flag: string | null;
 }
 
 interface League {
@@ -45,58 +45,126 @@ const LazyImage = ({
 };
 
 const Filter = () => {
-  const countries: Country[] = [
-    { name: "England", code: "ENG", flag: "https://via.placeholder.com/20" },
-    { name: "Spain", code: "ESP", flag: "https://via.placeholder.com/20" },
-    { name: "Germany", code: "GER", flag: "https://via.placeholder.com/20" },
-    { name: "Italy", code: "ITA", flag: "https://via.placeholder.com/20" },
-    { name: "France", code: "FRA", flag: "https://via.placeholder.com/20" },
-    { name: "Portugal", code: "POR", flag: "https://via.placeholder.com/20" },
-    {
-      name: "Netherlands",
-      code: "NED",
-      flag: "https://via.placeholder.com/20",
-    },
-    { name: "Belgium", code: "BEL", flag: "https://via.placeholder.com/20" },
-  ];
+  const [countries, setCountries] = useState<Country[]>([]);
 
+  // Top 10 leagues data
   const leagues: League[] = [
     {
-      name: "Premier League",
-      leagueID: 1,
-      logo: "https://via.placeholder.com/20",
-    },
-    { name: "La Liga", leagueID: 2, logo: "https://via.placeholder.com/20" },
-    { name: "Bundesliga", leagueID: 3, logo: "https://via.placeholder.com/20" },
-    { name: "Serie A", leagueID: 4, logo: "https://via.placeholder.com/20" },
-    { name: "Ligue 1", leagueID: 5, logo: "https://via.placeholder.com/20" },
-    { name: "Eredivisie", leagueID: 6, logo: "https://via.placeholder.com/20" },
-    {
-      name: "Primeira Liga",
-      leagueID: 7,
-      logo: "https://via.placeholder.com/20",
-    },
-    {
       name: "Championship",
-      leagueID: 8,
-      logo: "https://via.placeholder.com/20",
+      leagueID: 40,
+      logo: "https://media.api-sports.io/football/leagues/40.png",
+    },
+    {
+      name: "League One",
+      leagueID: 41,
+      logo: "https://media.api-sports.io/football/leagues/41.png",
+    },
+    {
+      name: "League Two",
+      leagueID: 42,
+      logo: "https://media.api-sports.io/football/leagues/42.png",
+    },
+    {
+      name: "National League",
+      leagueID: 43,
+      logo: "https://media.api-sports.io/football/leagues/43.png",
+    },
+    {
+      name: "FA WSL",
+      leagueID: 44,
+      logo: "https://media.api-sports.io/football/leagues/44.png",
+    },
+    {
+      name: "FA Cup",
+      leagueID: 45,
+      logo: "https://media.api-sports.io/football/leagues/45.png",
+    },
+    {
+      name: "EFL Trophy",
+      leagueID: 46,
+      logo: "https://media.api-sports.io/football/leagues/46.png",
+    },
+    {
+      name: "FA Trophy",
+      leagueID: 47,
+      logo: "https://media.api-sports.io/football/leagues/47.png",
+    },
+    {
+      name: "League Cup",
+      leagueID: 48,
+      logo: "https://media.api-sports.io/football/leagues/48.png",
     },
   ];
 
+  // Top 10 teams from Premier League
   const teams: Team[] = [
     {
       id: 1,
-      name: "Manchester United",
-      logo: "https://via.placeholder.com/20",
+      name: "Arsenal",
+      logo: "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/England%20-%20Premier%20League/Arsenal.png",
     },
-    { id: 2, name: "Barcelona", logo: "https://via.placeholder.com/20" },
-    { id: 3, name: "Bayern Munich", logo: "https://via.placeholder.com/20" },
-    { id: 4, name: "Juventus", logo: "https://via.placeholder.com/20" },
-    { id: 5, name: "PSG", logo: "https://via.placeholder.com/20" },
-    { id: 6, name: "Ajax", logo: "https://via.placeholder.com/20" },
-    { id: 7, name: "Porto", logo: "https://via.placeholder.com/20" },
-    { id: 8, name: "Real Madrid", logo: "https://via.placeholder.com/20" },
+    {
+      id: 2,
+      name: "Aston Villa",
+      logo: "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/England%20-%20Premier%20League/Aston%20Villa.png",
+    },
+    {
+      id: 3,
+      name: "Brighton",
+      logo: "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/England%20-%20Premier%20League/Brighton.png",
+    },
+    {
+      id: 4,
+      name: "Burnley",
+      logo: "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/England%20-%20Premier%20League/Burnley.png",
+    },
+    {
+      id: 5,
+      name: "Chelsea",
+      logo: "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/England%20-%20Premier%20League/Chelsea.png",
+    },
+    {
+      id: 6,
+      name: "Crystal Palace",
+      logo: "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/England%20-%20Premier%20League/Crystal%20Palace.png",
+    },
+    {
+      id: 7,
+      name: "Everton",
+      logo: "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/England%20-%20Premier%20League/Everton.png",
+    },
+    {
+      id: 8,
+      name: "Leeds",
+      logo: "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/England%20-%20Premier%20League/Leeds.png",
+    },
+    {
+      id: 9,
+      name: "Leicester",
+      logo: "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/England%20-%20Premier%20League/Leicester.png",
+    },
+    {
+      id: 10,
+      name: "Liverpool",
+      logo: "https://raw.githubusercontent.com/luukhopman/football-logos/master/logos/England%20-%20Premier%20League/Liverpool.png",
+    },
   ];
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch(
+          "https://backend.betaisports.net/countries/"
+        );
+        const data = await response.json();
+        setCountries(data);
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+      }
+    };
+
+    fetchCountries();
+  }, []);
 
   const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>
@@ -110,24 +178,6 @@ const Filter = () => {
     <div className="frost-effect w-[240px] h-[600px] bg-black rounded-[12px] border border-white/50 flex flex-col items-center shadow-lg">
       <div className="w-full flex-1 overflow-y-auto px-4 py-3">
         <div className="flex flex-col gap-3 w-full">
-          <h1 className="font-bold text-[20px]">Countries</h1>
-          {countries.map((country) => (
-            <div
-              key={country.code}
-              className="w-full min-h-[40px] py-2 border border-[#4D4F5C] rounded-[8px] flex px-3 items-center"
-            >
-              <LazyImage
-                src={country.flag}
-                alt={country.name}
-                className="mr-2 w-[20px] h-[20px] flex-shrink-0"
-                onError={handleImageError}
-              />
-              <span className="break-words text-sm">{country.name}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-col mt-5 gap-3 w-full">
           <h1 className="font-bold text-[20px]">Top Leagues</h1>
           {leagues.map((league) => (
             <div
@@ -159,6 +209,26 @@ const Filter = () => {
                 onError={handleImageError}
               />
               <span className="break-words text-sm">{team.name}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col mt-5 gap-3 w-full">
+          <h1 className="font-bold text-[20px]">Countries</h1>
+          {countries.map((country) => (
+            <div
+              key={country.code || country.name}
+              className="w-full min-h-[40px] py-2 border border-[#4D4F5C] rounded-[8px] flex px-3 items-center"
+            >
+              {country.flag && (
+                <LazyImage
+                  src={country.flag}
+                  alt={country.name}
+                  className="mr-2 w-[20px] h-[20px] flex-shrink-0"
+                  onError={handleImageError}
+                />
+              )}
+              <span className="break-words text-sm">{country.name}</span>
             </div>
           ))}
         </div>
