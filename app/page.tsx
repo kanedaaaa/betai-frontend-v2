@@ -4,6 +4,7 @@ import SportSelector from "@/components/SportSelector";
 import { ListFilterPlus, X } from "lucide-react";
 import { useState } from "react";
 import Filter from "@/components/Filter";
+import Game from "@/components/Game";
 
 export default function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -20,7 +21,9 @@ export default function Home() {
           onClick={() => setIsFilterOpen(true)}
         />
       </div>
-
+      <div>
+        <Game />
+      </div>
       {isFilterOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="relative">
