@@ -42,3 +42,10 @@ body {
   color: var(--foreground);
   font-family: var(--font-primary);
 }
+
+@media (max-width: 768px) {
+  body {
+    background: url("/MobileBackground.png") no-repeat center top fixed;
+    background-size: cover;
+  }
+}
