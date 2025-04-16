@@ -1,15 +1,32 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Pilat Extended";
+  src: url("/fonts/PilatExtended-DemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Manrope";
+  src: url("https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap");
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colors */
+  --brand-green: #02a875;
+  --background: #171717;
+  --foreground: #f8fafc;
+
+  /* Typography */
+  --font-logo: "Pilat Extended", sans-serif;
+  --font-primary: "Manrope", sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--brand-green);
+  --font-sans: var(--font-primary);
+  --font-logo: var(--font-logo);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,7 +37,8 @@
 }
 
 body {
-  background: var(--background);
+  background: url("/Background.png") no-repeat center top fixed;
+  background-size: cover;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-primary);
 }
