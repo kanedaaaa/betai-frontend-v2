@@ -9,3 +9,14 @@ export interface League {
   leagueID: number;
   logo: string;
 }
+
+export interface Game {
+  fixture_id: number;
+  home_team: string;
+  home_team_logo: string;
+  away_team: string;
+  away_team_logo: string;
+  date: string;
+  league_name: string;
+  league_logo: string;
+}

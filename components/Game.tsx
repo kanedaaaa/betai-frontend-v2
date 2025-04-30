@@ -1,47 +1,119 @@
-const Game = () => {
-  const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>
-  ) => {
-    const img = e.target as HTMLImageElement;
-    img.src =
-      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9IiM0RDRGNUMiLz48L3N2Zz4=";
-  };
+import { useState, useEffect } from "react";
+import { Game as GameType } from "@/types";
+import { LazyImage } from "./LazyImage";
+
+interface GameProps {
+  leagueId?: number;
+}
+
+const Game = ({ leagueId }: GameProps) => {
+  const [games, setGames] = useState<GameType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      if (!leagueId) {
+        setGames([]);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `https://backend.betaisports.net/games/${leagueId}`
+        );
+        const data = await response.json();
+        setGames(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error fetching games:", error);
+        setGames([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchGames();
+  }, [leagueId]);
+
+  if (!leagueId) {
+    return (
+      <div className="flex justify-center items-center h-[200px] text-white/50">
+        Select a league to view games
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[200px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
+  if (games.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-[200px] text-white/50">
+        No games found
+      </div>
+    );
+  }
 
   return (
-    <div className="mt-[10px] flex flex-col items-center justify-center">
-      <div className="text-white text-sm">28 February, Saturday</div>
-      <div className="mt-[10px] bg-black h-[100px] w-full flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="text-white text-sm ml-[10px]">03:00</div>
-          <div className="flex items-start flex-col ml-[10px]">
-            <div className="flex items-center">
-              <img
-                src="https://raw.githubusercontent.com/luukhopman/football-logos/refs/heads/master/logos/England%20-%20Premier%20League/Liverpool%20FC.png"
-                alt="Liverpool FC"
-                width={20}
-                height={20}
-                className="mr-2 rounded-full"
-                onError={handleImageError}
+    <div className="p-4">
+      {games.map((game) => (
+        <div
+          key={game.fixture_id}
+          className="mb-4 p-4 bg-black rounded-lg border border-[#4D4F5C]"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <LazyImage
+                src={game.league_logo}
+                alt={game.league_name}
+                className="w-6 h-6"
               />
-              <span>Liverpool FC</span>
+              <span className="text-sm text-white/70">{game.league_name}</span>
             </div>
-            <div className="flex items-center">
-              <img
-                src="https://raw.githubusercontent.com/luukhopman/football-logos/refs/heads/master/logos/England%20-%20Premier%20League/Southampton%20FC.png"
-                alt="Southampton FC"
-                width={20}
-                height={20}
-                className="mr-2 rounded-full"
-                onError={handleImageError}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-white">
+                {new Date(game.date).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+              <span className="text-sm text-white/50">
+                {new Date(game.date).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 flex items-center gap-2 min-w-0">
+              <LazyImage
+                src={game.home_team_logo}
+                alt={game.home_team}
+                className="w-8 h-8 flex-shrink-0"
               />
-              <span>Southampton FC</span>
+              <span className="text-sm text-white break-words line-clamp-2">
+                {game.home_team}
+              </span>
+            </div>
+            <div className="flex-shrink-0 px-2">
+              <span className="text-sm text-white/50">vs</span>
+            </div>
+            <div className="flex-1 flex items-center gap-2 min-w-0 justify-end">
+              <span className="text-sm text-white break-words line-clamp-2 text-right">
+                {game.away_team}
+              </span>
+              <LazyImage
+                src={game.away_team_logo}
+                alt={game.away_team}
+                className="w-8 h-8 flex-shrink-0"
+              />
             </div>
           </div>
         </div>
-        <button className="mr-[10px] bg-emerald-500 text-white text-sm px-[10px] py-[5px] rounded-md">
-          ANALYSE
-        </button>
-      </div>
+      ))}
     </div>
   );
 };
