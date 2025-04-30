@@ -1,13 +1,13 @@
 export interface Country {
-  name: string;
-  code: string | null;
-  flag: string | null;
+  countryID: number;
+  countryName: string;
+  countryLogo: string;
 }
 
 export interface League {
-  name: string;
   leagueID: number;
-  logo: string;
+  leagueName: string;
+  leagueLogo: string;
 }
 
 export interface Game {
@@ -19,4 +19,18 @@ export interface Game {
   date: string;
   league_name: string;
   league_logo: string;
+}
+
+export interface TeamStats {
+  avg_goals: number;
+  avg_cards: number;
+  avg_corners: number;
+  avg_offsides: number;
+  avg_fouls: number;
+}
+
+export interface Analysis {
+  home_team: TeamStats;
+  away_team: TeamStats;
+  combined: TeamStats;
 }

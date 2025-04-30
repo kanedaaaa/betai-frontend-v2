@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Game as GameType } from "@/types";
 import { LazyImage } from "@/components/LazyImage";
+import Analysis from "./Analysis";
 
 interface GameProps {
   leagueId?: number;
@@ -9,6 +10,7 @@ interface GameProps {
 const Game = ({ leagueId }: GameProps) => {
   const [games, setGames] = useState<GameType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedGame, setSelectedGame] = useState<GameType | null>(null);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -112,17 +114,26 @@ const Game = ({ leagueId }: GameProps) => {
               />
             </div>
           </div>
-          <div className="flex justify-between gap-2 mt-4 pt-4 border-t border-[#4D4F5C]">
-            <button className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
-              Analyse
-            </button>
-            <button className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
-              Ticket
-            </button>
-            <button className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
-              Filterize
-            </button>
-          </div>
+          {selectedGame?.fixture_id === game.fixture_id ? (
+            <div className="mt-4 pt-4 border-t border-[#4D4F5C]">
+              <Analysis game={game} onClose={() => setSelectedGame(null)} />
+            </div>
+          ) : (
+            <div className="flex justify-between gap-2 mt-4 pt-4 border-t border-[#4D4F5C]">
+              <button
+                onClick={() => setSelectedGame(game)}
+                className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
+              >
+                Analyse
+              </button>
+              <button className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
+                Ticket
+              </button>
+              <button className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
+                Filterize
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </div>
