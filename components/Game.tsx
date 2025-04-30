@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Game as GameType } from "@/types";
-import { LazyImage } from "./LazyImage";
+import { LazyImage } from "@/components/LazyImage";
 
 interface GameProps {
   leagueId?: number;
@@ -111,6 +111,17 @@ const Game = ({ leagueId }: GameProps) => {
                 className="w-8 h-8 flex-shrink-0"
               />
             </div>
+          </div>
+          <div className="flex justify-between gap-2 mt-4 pt-4 border-t border-[#4D4F5C]">
+            <button className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
+              Analyse
+            </button>
+            <button className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
+              Ticket
+            </button>
+            <button className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
+              Filterize
+            </button>
           </div>
         </div>
       ))}
