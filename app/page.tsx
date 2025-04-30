@@ -5,9 +5,12 @@ import { ListFilterPlus, X } from "lucide-react";
 import { useState } from "react";
 import Filter from "@/components/Filter";
 import Game from "@/components/Game";
+import { Country, League } from "@/types";
 
 export default function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [selectedLeague, setSelectedLeague] = useState<League | null>(null);
 
   return (
     <div>
@@ -33,7 +36,12 @@ export default function Home() {
             >
               <X className="w-4 h-4 text-white" />
             </button>
-            <Filter />
+            <Filter
+              selectedCountry={selectedCountry}
+              selectedLeague={selectedLeague}
+              onCountrySelect={setSelectedCountry}
+              onLeagueSelect={setSelectedLeague}
+            />
           </div>
         </div>
       )}

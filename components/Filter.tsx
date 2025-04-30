@@ -1,15 +1,11 @@
 import { useState, useRef, useEffect } from "react";
+import { Country, League } from "@/types";
 
-interface Country {
-  name: string;
-  code: string | null;
-  flag: string | null;
-}
-
-interface League {
-  name: string;
-  leagueID: number;
-  logo: string;
+interface FilterProps {
+  selectedCountry: Country | null;
+  selectedLeague: League | null;
+  onCountrySelect: (country: Country | null) => void;
+  onLeagueSelect: (league: League | null) => void;
 }
 
 const LazyImage = ({
@@ -52,22 +48,32 @@ const LeagueSkeleton = () => (
   </div>
 );
 
-const Filter = () => {
+const Filter = ({
+  selectedCountry,
+  selectedLeague,
+  onCountrySelect,
+  onLeagueSelect,
+}: FilterProps) => {
   const [countries, setCountries] = useState<Country[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [leagues, setLeagues] = useState<League[]>([]);
-  const [selectedLeague, setSelectedLeague] = useState<League | null>(null);
-  const [isLoadingCountries, setIsLoadingCountries] = useState(true);
+  const [isLoadingCountries, setIsLoadingCountries] = useState(
+    !selectedCountry
+  );
   const [isLoadingLeagues, setIsLoadingLeagues] = useState(false);
 
   useEffect(() => {
     const fetchCountries = async () => {
+      if (selectedCountry) {
+        setCountries([selectedCountry]);
+        setIsLoadingCountries(false);
+        return;
+      }
+
       try {
         const response = await fetch(
           "https://backend.betaisports.net/countries/"
         );
         const data = await response.json();
-        // Filter out Crimea from the countries list
         const filteredCountries = data.filter(
           (country: Country) => country.name !== "Crimea"
         );
@@ -80,12 +86,17 @@ const Filter = () => {
     };
 
     fetchCountries();
-  }, []);
+  }, [selectedCountry]);
 
   useEffect(() => {
     const fetchLeagues = async () => {
       if (!selectedCountry) {
         setLeagues([]);
+        return;
+      }
+
+      if (selectedLeague) {
+        setLeagues([selectedLeague]);
         return;
       }
 
@@ -104,7 +115,7 @@ const Filter = () => {
     };
 
     fetchLeagues();
-  }, [selectedCountry]);
+  }, [selectedCountry, selectedLeague]);
 
   const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>
@@ -116,19 +127,19 @@ const Filter = () => {
 
   const handleCountryClick = (country: Country) => {
     if (selectedCountry?.name === country.name) {
-      setSelectedCountry(null);
-      setSelectedLeague(null);
+      onCountrySelect(null);
+      onLeagueSelect(null);
     } else {
-      setSelectedCountry(country);
-      setSelectedLeague(null);
+      onCountrySelect(country);
+      onLeagueSelect(null);
     }
   };
 
   const handleLeagueClick = (league: League) => {
     if (selectedLeague?.leagueID === league.leagueID) {
-      setSelectedLeague(null);
+      onLeagueSelect(null);
     } else {
-      setSelectedLeague(league);
+      onLeagueSelect(league);
     }
   };
 
