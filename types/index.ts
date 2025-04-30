@@ -1,4 +1,7 @@
 export interface Country {
+  name: string;
+  code: string | null;
+  flag: string | null;
   countryID: number;
   countryName: string;
   countryLogo: string;
@@ -8,6 +11,8 @@ export interface League {
   leagueID: number;
   leagueName: string;
   leagueLogo: string;
+  logo: string;
+  name: string;
 }
 
 export interface Game {

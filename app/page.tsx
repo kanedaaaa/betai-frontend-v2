@@ -1,7 +1,7 @@
 "use client";
 import SearchBar from "@/components/Search";
 import SportSelector from "@/components/SportSelector";
-import { ListFilterPlus, X } from "lucide-react";
+import { ListFilterPlus, X, Ticket, Filter as FilterIcon } from "lucide-react";
 import { useState } from "react";
 import Filter from "@/components/Filter";
 import Game from "@/components/Game";
@@ -18,11 +18,18 @@ export default function Home() {
         <SportSelector />
       </div>
       <div className="flex justify-center items-center h-[54px] bg-black border-b border-[#4D4F5C] gap-3 ">
-        <SearchBar value="" onChange={() => {}} />
-        <ListFilterPlus
-          className="w-[16px] h-[16px] text-white cursor-pointer"
+        <button className="bg-[#02a875] text-white p-2 rounded">
+          <Ticket className="w-5 h-5" />
+        </button>
+        <button className="bg-[#02a875] text-white p-2 rounded">
+          <FilterIcon className="w-5 h-5" />
+        </button>
+        <button
+          className="bg-[#02a875] text-white p-2 rounded"
           onClick={() => setIsFilterOpen(true)}
-        />
+        >
+          <ListFilterPlus className="w-5 h-5" />
+        </button>
       </div>
       <div>
         <Game leagueId={selectedLeague?.leagueID} />

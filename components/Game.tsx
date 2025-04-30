@@ -126,12 +126,6 @@ const Game = ({ leagueId }: GameProps) => {
               >
                 Analyse
               </button>
-              <button className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
-                Ticket
-              </button>
-              <button className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
-                Filterize
-              </button>
             </div>
           )}
         </div>
