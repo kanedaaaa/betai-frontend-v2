@@ -50,7 +50,10 @@ export default function Home() {
             />
           </div>
 
-          <div className="mr-[30px]">
+          <div className="mr-[30px] relative">
+            <div className="absolute -top-[0px] left-0 w-full">
+              <SportSelector />
+            </div>
             <Game leagueId={selectedLeague?.leagueID} />
           </div>
 

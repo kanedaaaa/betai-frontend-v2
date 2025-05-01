@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 
 const SportSelector = () => {
   const sports = [
@@ -10,9 +11,28 @@ const SportSelector = () => {
     { id: "nfl", name: "NFL" },
   ];
   const [selectedSport, setSelectedSport] = useState(sports[0].id);
+  const [indicatorProps, setIndicatorProps] = useState({ width: 0, x: 0 });
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-  return (
-    <div className="flex gap-4">
+  useEffect(() => {
+    if (itemRefs.current[selectedSport] && containerRef.current) {
+      const currentItem = itemRefs.current[selectedSport];
+      const containerRect = containerRef.current.getBoundingClientRect();
+
+      if (currentItem) {
+        const itemRect = currentItem.getBoundingClientRect();
+        setIndicatorProps({
+          width: itemRect.width,
+          x: itemRect.left - containerRect.left - 8,
+        });
+      }
+    }
+  }, [selectedSport]);
+
+  // Mobile version
+  const MobileVersion = () => (
+    <div className="flex gap-4 xl:hidden">
       {sports.map((sport) => (
         <div
           key={sport.id}
@@ -37,6 +57,50 @@ const SportSelector = () => {
         </div>
       ))}
     </div>
+  );
+
+  // Desktop version
+  const DesktopVersion = () => (
+    <div
+      ref={containerRef}
+      className="frost-effect absolute -top-[70px] left-0 w-full h-[50px] bg-black rounded-[100px] border border-white/50 flex justify-between items-center p-2 hidden xl:flex"
+    >
+      <motion.div
+        initial={false}
+        animate={{
+          width: indicatorProps.width,
+          x: indicatorProps.x,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 400,
+          damping: 30,
+        }}
+        className="absolute bg-[#02A875] rounded-[100px] h-8 z-0"
+      />
+
+      {sports.map((sport) => (
+        <div
+          key={sport.id}
+          ref={(el) => {
+            itemRefs.current[sport.id] = el;
+          }}
+          className={`relative z-10 text-[16px] px-3 py-1 rounded-[100px] cursor-pointer flex items-center justify-center ${
+            selectedSport === sport.id ? "text-black" : "text-white"
+          }`}
+          onClick={() => setSelectedSport(sport.id)}
+        >
+          {sport.name}
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <>
+      <MobileVersion />
+      <DesktopVersion />
+    </>
   );
 };
 
