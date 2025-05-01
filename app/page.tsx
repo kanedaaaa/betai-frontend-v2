@@ -1,5 +1,4 @@
 "use client";
-import SearchBar from "@/components/Search";
 import SportSelector from "@/components/SportSelector";
 import { ListFilterPlus, X, Ticket, Filter as FilterIcon } from "lucide-react";
 import { useState } from "react";
