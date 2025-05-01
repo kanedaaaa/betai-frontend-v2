@@ -46,7 +46,7 @@ const StatCard = ({
   isCombined?: boolean;
 }) => {
   return (
-    <div className="space-y-5">
+    <div className={`space-y-5 ${!isCombined ? "xl:h-[280px]" : ""}`}>
       <h3 className="text-sm xl:text-[1rem] font-semibold text-white/70">
         {title}
       </h3>
@@ -140,11 +140,11 @@ const Analysis = ({ game, onClose }: AnalysisProps) => {
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <StatCard
-                      title={`${game.home_team} Stats`}
+                      title={`${game.home_team}`}
                       stats={analysis.home_team}
                     />
                     <StatCard
-                      title={`${game.away_team} Stats`}
+                      title={`${game.away_team}`}
                       stats={analysis.away_team}
                     />
                   </div>
@@ -182,11 +182,11 @@ const Analysis = ({ game, onClose }: AnalysisProps) => {
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <StatCard
-                    title={`${game.home_team} Stats`}
+                    title={`${game.home_team}`}
                     stats={analysis.home_team}
                   />
                   <StatCard
-                    title={`${game.away_team} Stats`}
+                    title={`${game.away_team}`}
                     stats={analysis.away_team}
                   />
                 </div>
