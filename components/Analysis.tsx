@@ -3,7 +3,7 @@ import { Game as GameType, Analysis as AnalysisType } from "@/types";
 import { X } from "lucide-react";
 
 interface AnalysisProps {
-  game: GameType;
+  game: GameType | null;
   onClose: () => void;
 }
 
@@ -46,8 +46,10 @@ const StatCard = ({
   isCombined?: boolean;
 }) => {
   return (
-    <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-white/70">{title}</h3>
+    <div className="space-y-5">
+      <h3 className="text-sm xl:text-[1rem] font-semibold text-white/70">
+        {title}
+      </h3>
       <div className="space-y-4">
         <StatBar
           label="Goals"
@@ -86,9 +88,19 @@ const StatCard = ({
 
 const Analysis = ({ game, onClose }: AnalysisProps) => {
   const [analysis, setAnalysis] = useState<AnalysisType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
+    if (!game) {
+      setAnalysis(null);
+      setIsLoading(false);
+      setIsExpanded(false);
+      return;
+    }
+
+    setIsExpanded(true);
+    setIsLoading(true);
     const fetchAnalysis = async () => {
       try {
         const response = await fetch(
@@ -104,48 +116,99 @@ const Analysis = ({ game, onClose }: AnalysisProps) => {
     };
 
     fetchAnalysis();
-  }, [game.fixture_id]);
+  }, [game?.fixture_id]);
 
   return (
-    <div className="animate-expand-down overflow-hidden">
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={onClose}
-          className="p-1 hover:bg-white/10 rounded-full transition-colors"
-        >
-          <X className="w-4 h-4 text-white/70" />
-        </button>
-      </div>
-      <div className="max-h-[400px] overflow-y-auto pr-2 space-y-6">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-          </div>
-        ) : analysis ? (
+    <>
+      <div className="xl:hidden animate-expand-down overflow-hidden">
+        {game && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <StatCard
-                title={`${game.home_team} Stats`}
-                stats={analysis.home_team}
-              />
-              <StatCard
-                title={`${game.away_team} Stats`}
-                stats={analysis.away_team}
-              />
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={onClose}
+                className="p-1 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <X className="w-4 h-4 text-white/70" />
+              </button>
             </div>
-            <StatCard
-              title="Combined Stats"
-              stats={analysis.combined}
-              isCombined
-            />
+            <div className="max-h-[400px] overflow-y-auto pr-2 space-y-6">
+              {isLoading ? (
+                <div className="flex justify-center items-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                </div>
+              ) : analysis ? (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <StatCard
+                      title={`${game.home_team} Stats`}
+                      stats={analysis.home_team}
+                    />
+                    <StatCard
+                      title={`${game.away_team} Stats`}
+                      stats={analysis.away_team}
+                    />
+                  </div>
+                  <StatCard
+                    title="Combined Stats"
+                    stats={analysis.combined}
+                    isCombined
+                  />
+                </>
+              ) : (
+                <div className="text-center text-white/50">
+                  Failed to load analysis
+                </div>
+              )}
+            </div>
           </>
+        )}
+      </div>
+      <div
+        className={`hidden xl:block bg-black rounded-[12px] border border-white/50 self-end transition-all duration-500 ease-in-out ${
+          isExpanded ? "h-[600px] w-[400px]" : "h-[300px] w-[400px]"
+        }`}
+      >
+        {game ? (
+          <div className="h-full">
+            {isLoading ? (
+              <div className="flex justify-center items-center h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+              </div>
+            ) : analysis ? (
+              <div
+                className={`p-4 space-y-6 transition-opacity duration-300 ${
+                  isExpanded ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <StatCard
+                    title={`${game.home_team} Stats`}
+                    stats={analysis.home_team}
+                  />
+                  <StatCard
+                    title={`${game.away_team} Stats`}
+                    stats={analysis.away_team}
+                  />
+                </div>
+                <StatCard
+                  title="Combined Stats"
+                  stats={analysis.combined}
+                  isCombined
+                />
+              </div>
+            ) : (
+              <div className="flex justify-center items-center h-full text-white/50">
+                Failed to load analysis
+              </div>
+            )}
+          </div>
         ) : (
-          <div className="text-center text-white/50">
-            Failed to load analysis
+          <div className="flex justify-center items-center h-full text-white/50">
+            Select a game to view analysis
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

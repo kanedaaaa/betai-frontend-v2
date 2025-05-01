@@ -5,12 +5,13 @@ import Analysis from "./Analysis";
 
 interface GameProps {
   leagueId?: number;
+  selectedGame: GameType | null;
+  onGameSelect: (game: GameType | null) => void;
 }
 
-const Game = ({ leagueId }: GameProps) => {
+const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
   const [games, setGames] = useState<GameType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedGame, setSelectedGame] = useState<GameType | null>(null);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -131,12 +132,12 @@ const Game = ({ leagueId }: GameProps) => {
             </div>
             {selectedGame?.fixture_id === game.fixture_id ? (
               <div className="block xl:hidden mt-4 pt-4 border-t border-[#4D4F5C]">
-                <Analysis game={game} onClose={() => setSelectedGame(null)} />
+                <Analysis game={game} onClose={() => onGameSelect(null)} />
               </div>
             ) : (
               <div className="justify-between gap-2 mt-4 pt-4 border-t border-[#4D4F5C]">
                 <button
-                  onClick={() => setSelectedGame(game)}
+                  onClick={() => onGameSelect(game)}
                   className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
                 >
                   Analyse
@@ -207,7 +208,7 @@ const Game = ({ leagueId }: GameProps) => {
                 </div>
                 <div className="ml-6">
                   <button
-                    onClick={() => setSelectedGame(game)}
+                    onClick={() => onGameSelect(game)}
                     className="py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors whitespace-nowrap"
                   >
                     Analyse

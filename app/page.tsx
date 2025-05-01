@@ -4,12 +4,14 @@ import { ListFilterPlus, X, Ticket, Filter as FilterIcon } from "lucide-react";
 import { useState } from "react";
 import Filter from "@/components/Filter";
 import Game from "@/components/Game";
-import { Country, League } from "@/types";
+import { Country, League, Game as GameType } from "@/types";
+import Analysis from "@/components/Analysis";
 
 export default function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [selectedLeague, setSelectedLeague] = useState<League | null>(null);
+  const [selectedGame, setSelectedGame] = useState<GameType | null>(null);
 
   return (
     <div>
@@ -33,7 +35,11 @@ export default function Home() {
           </button>
         </div>
         <div>
-          <Game leagueId={selectedLeague?.leagueID} />
+          <Game
+            leagueId={selectedLeague?.leagueID}
+            selectedGame={selectedGame}
+            onGameSelect={setSelectedGame}
+          />
         </div>
       </div>
 
@@ -53,12 +59,14 @@ export default function Home() {
             <div className="absolute -top-[0px] left-0 w-full">
               <SportSelector />
             </div>
-            <Game leagueId={selectedLeague?.leagueID} />
+            <Game
+              leagueId={selectedLeague?.leagueID}
+              selectedGame={selectedGame}
+              onGameSelect={setSelectedGame}
+            />
           </div>
 
-          <div className="w-[400px] h-[300px] bg-black rounded-[12px] border border-white/50 self-end">
-            {/* Dummy black component */}
-          </div>
+          <Analysis game={selectedGame} onClose={() => setSelectedGame(null)} />
         </div>
       </div>
 
