@@ -14,26 +14,52 @@ export default function Home() {
 
   return (
     <div>
-      <div className="mt-[20px] flex justify-center items-center h-[104px] bg-black border-b border-t border-[#4D4F5C] ">
-        <SportSelector />
+      {/* Mobile Layout */}
+      <div className="xl:hidden">
+        <div className="mt-[20px] flex justify-center items-center h-[104px] bg-black border-b border-t border-[#4D4F5C] ">
+          <SportSelector />
+        </div>
+        <div className="flex justify-center items-center h-[54px] bg-black border-b border-[#4D4F5C] gap-3 ">
+          <button className="bg-[#02a875] text-white p-2 rounded">
+            <Ticket className="w-5 h-5" />
+          </button>
+          <button className="bg-[#02a875] text-white p-2 rounded">
+            <FilterIcon className="w-5 h-5" />
+          </button>
+          <button
+            className="bg-[#02a875] text-white p-2 rounded"
+            onClick={() => setIsFilterOpen(true)}
+          >
+            <ListFilterPlus className="w-5 h-5" />
+          </button>
+        </div>
+        <div>
+          <Game leagueId={selectedLeague?.leagueID} />
+        </div>
       </div>
-      <div className="flex justify-center items-center h-[54px] bg-black border-b border-[#4D4F5C] gap-3 ">
-        <button className="bg-[#02a875] text-white p-2 rounded">
-          <Ticket className="w-5 h-5" />
-        </button>
-        <button className="bg-[#02a875] text-white p-2 rounded">
-          <FilterIcon className="w-5 h-5" />
-        </button>
-        <button
-          className="bg-[#02a875] text-white p-2 rounded"
-          onClick={() => setIsFilterOpen(true)}
-        >
-          <ListFilterPlus className="w-5 h-5" />
-        </button>
+
+      {/* Desktop Layout */}
+      <div className="hidden xl:flex justify-center items-start mt-[90px]">
+        <div className="flex gap-[40px] max-w-[1800px] w-full px-4">
+          <div className="w-[300px]">
+            <Filter
+              selectedCountry={selectedCountry}
+              selectedLeague={selectedLeague}
+              onCountrySelect={setSelectedCountry}
+              onLeagueSelect={setSelectedLeague}
+            />
+          </div>
+
+          <div className="flex-1 flex justify-center">
+            <Game leagueId={selectedLeague?.leagueID} />
+          </div>
+
+          <div className="w-[300px] h-[600px] bg-black rounded-[12px] border border-white/50">
+            {/* Dummy black component */}
+          </div>
+        </div>
       </div>
-      <div>
-        <Game leagueId={selectedLeague?.leagueID} />
-      </div>
+
       {isFilterOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="relative">
