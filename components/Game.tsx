@@ -39,24 +39,36 @@ const Game = ({ leagueId }: GameProps) => {
 
   if (!leagueId) {
     return (
-      <div className="flex justify-center items-center h-[200px] text-white/50">
-        Select a league to view games
+      <div className="hidden xl:block">
+        <div className="relative w-[570px] h-[600px] bg-black rounded-[12px] border border-white/50 flex flex-col">
+          <div className="flex justify-center items-center h-full text-white/50">
+            Select a league to view games
+          </div>
+        </div>
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-[200px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      <div className="hidden xl:block">
+        <div className="relative w-[570px] h-[600px] bg-black rounded-[12px] border border-white/50 flex flex-col">
+          <div className="flex justify-center items-center h-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (games.length === 0) {
     return (
-      <div className="flex justify-center items-center h-[200px] text-white/50">
-        No games found
+      <div className="hidden xl:block">
+        <div className="relative w-[570px] h-[600px] bg-black rounded-[12px] border border-white/50 flex flex-col">
+          <div className="flex justify-center items-center h-full text-white/50">
+            No games found
+          </div>
+        </div>
       </div>
     );
   }

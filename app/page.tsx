@@ -40,8 +40,8 @@ export default function Home() {
 
       {/* Desktop Layout */}
       <div className="hidden xl:flex justify-center items-start mt-[90px]">
-        <div className="flex gap-[40px] max-w-[1800px] w-full px-4">
-          <div className="w-[300px]">
+        <div className="flex">
+          <div className="w-[300px] mr-[10px]">
             <Filter
               selectedCountry={selectedCountry}
               selectedLeague={selectedLeague}
@@ -50,11 +50,11 @@ export default function Home() {
             />
           </div>
 
-          <div className="flex-1 flex justify-center">
+          <div className="mr-[30px]">
             <Game leagueId={selectedLeague?.leagueID} />
           </div>
 
-          <div className="w-[300px] h-[600px] bg-black rounded-[12px] border border-white/50">
+          <div className="w-[400px] h-[300px] bg-black rounded-[12px] border border-white/50 self-end">
             {/* Dummy black component */}
           </div>
         </div>
