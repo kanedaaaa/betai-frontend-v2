@@ -39,12 +39,16 @@ export default function Home() {
   const [isTicketOpen, setIsTicketOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [selectedLeague, setSelectedLeague] = useState<League | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedGame, setSelectedGame] = useState<GameType | null>(null);
   const [ticketGames, setTicketGames] = useState<GameType[]>([]);
   const [isTicketActive, setIsTicketActive] = useState(false);
   const [isFilterActive, setIsFilterActive] = useState(false);
 
   const handleCreateTicket = async (minOdd: string, maxOdd: string) => {
+    if (!selectedGame) return;
+    setIsTicketActive(true);
     try {
       const response = await fetch(
         `https://backend.betaisports.net/ticket-creator/?min_odd=${minOdd}&max_odd=${maxOdd}`
@@ -74,8 +78,6 @@ export default function Home() {
 
       const games = await Promise.all(fixturePromises);
       setTicketGames(games);
-      setIsTicketActive(true);
-      setIsFilterActive(false);
       setIsTicketOpen(false);
     } catch (error) {
       console.error("Error creating ticket:", error);
@@ -84,21 +86,26 @@ export default function Home() {
 
   const handleCountrySelect = (country: Country | null) => {
     setSelectedCountry(country);
+    setSelectedLeague(null);
+    setSelectedDate(null);
     if (country) {
       setIsFilterActive(true);
       setIsTicketActive(false);
     } else {
       setIsFilterActive(false);
+      setSelectedDate(new Date());
     }
   };
 
   const handleLeagueSelect = (league: League | null) => {
     setSelectedLeague(league);
+    setSelectedDate(null);
     if (league) {
       setIsFilterActive(true);
       setIsTicketActive(false);
     } else if (!selectedCountry) {
       setIsFilterActive(false);
+      setSelectedDate(new Date());
     }
   };
 
@@ -146,6 +153,8 @@ export default function Home() {
               leagueId={selectedLeague?.leagueID}
               selectedGame={selectedGame}
               onGameSelect={setSelectedGame}
+              selectedDate={selectedDate}
+              onDateSelect={setSelectedDate}
             />
           )}
         </div>
@@ -179,6 +188,8 @@ export default function Home() {
                 leagueId={selectedLeague?.leagueID}
                 selectedGame={selectedGame}
                 onGameSelect={setSelectedGame}
+                selectedDate={selectedDate}
+                onDateSelect={setSelectedDate}
               />
             )}
           </div>

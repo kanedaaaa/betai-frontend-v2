@@ -321,7 +321,7 @@ const Filter = ({
 
   // Desktop version
   return (
-    <div className="w-[240px] h-[600px] bg-black/50 backdrop-blur-md rounded-[12px] border border-white/50 overflow-y-auto">
+    <div className="w-[240px] h-[673px] bg-black/50 backdrop-blur-md rounded-[12px] border border-white/50 overflow-y-auto">
       <div className="w-full flex justify-center items-center mt-2">
         <SearchBar
           value={searchQuery}

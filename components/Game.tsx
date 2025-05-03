@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { Game as GameType } from "@/types";
 import { LazyImage } from "@/components/LazyImage";
 import UtilityWindow from "./UtilityWindow";
+import DateSelector from "./DateSelector";
 
 interface GameProps {
   leagueId?: number;
   selectedGame: GameType | null;
   onGameSelect: (game: GameType | null) => void;
   games?: GameType[];
+  selectedDate?: Date | null;
+  onDateSelect?: (date: Date) => void;
 }
 
 const Game = ({
@@ -15,24 +18,37 @@ const Game = ({
   selectedGame,
   onGameSelect,
   games: providedGames,
+  selectedDate,
+  onDateSelect,
 }: GameProps) => {
   const [games, setGames] = useState<GameType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchGames = async () => {
-      if (!leagueId) {
+      if (!leagueId && !selectedDate) {
         setGames([]);
         return;
       }
 
       setIsLoading(true);
       try {
-        const response = await fetch(
-          `https://backend.betaisports.net/games/${leagueId}`
-        );
-        const data = await response.json();
-        setGames(Array.isArray(data) ? data : []);
+        let response;
+        if (leagueId) {
+          response = await fetch(
+            `https://backend.betaisports.net/games/${leagueId}`
+          );
+        } else if (selectedDate) {
+          const formattedDate = selectedDate.toISOString().split("T")[0];
+          response = await fetch(
+            `https://backend.betaisports.net/top_leagues_games_by_date/${formattedDate}`
+          );
+        }
+
+        if (response) {
+          const data = await response.json();
+          setGames(Array.isArray(data) ? data : []);
+        }
       } catch (error) {
         console.error("Error fetching games:", error);
         setGames([]);
@@ -44,16 +60,22 @@ const Game = ({
     if (!providedGames) {
       fetchGames();
     }
-  }, [leagueId, providedGames]);
+  }, [leagueId, selectedDate, providedGames]);
 
   const displayGames = providedGames || games;
 
-  if (!leagueId && !providedGames) {
+  if (!leagueId && !selectedDate && !providedGames) {
     return (
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+        <div className="relative w-[570px] h-[1000px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+          {onDateSelect && (
+            <DateSelector
+              selectedDate={new Date()}
+              onDateSelect={onDateSelect}
+            />
+          )}
           <div className="flex justify-center items-center h-full text-white/50">
-            Select a league to view games
+            Select a league or date to view games
           </div>
         </div>
       </div>
@@ -63,7 +85,13 @@ const Game = ({
   if (isLoading && !providedGames) {
     return (
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+        <div className="relative w-[570px] h-[800px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+          {!leagueId && onDateSelect && selectedDate && (
+            <DateSelector
+              selectedDate={selectedDate}
+              onDateSelect={onDateSelect}
+            />
+          )}
           <div className="flex justify-center items-center h-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
           </div>
@@ -75,7 +103,13 @@ const Game = ({
   if (displayGames.length === 0) {
     return (
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+        <div className="relative w-[570px] h-[800px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+          {!leagueId && onDateSelect && selectedDate && (
+            <DateSelector
+              selectedDate={selectedDate}
+              onDateSelect={onDateSelect}
+            />
+          )}
           <div className="flex justify-center items-center h-full text-white/50">
             No games found
           </div>
@@ -87,6 +121,12 @@ const Game = ({
   return (
     <>
       <div className="block xl:hidden p-4">
+        {!leagueId && onDateSelect && selectedDate && (
+          <DateSelector
+            selectedDate={selectedDate}
+            onDateSelect={onDateSelect}
+          />
+        )}
         {displayGames.map((game) => (
           <div
             key={game.fixture_id}
@@ -160,7 +200,13 @@ const Game = ({
       </div>
 
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col overflow-y-auto">
+        <div className="relative w-[570px] h-[673px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col overflow-y-auto">
+          {!leagueId && onDateSelect && selectedDate && (
+            <DateSelector
+              selectedDate={selectedDate}
+              onDateSelect={onDateSelect}
+            />
+          )}
           {displayGames.map((game) => (
             <div
               key={game.fixture_id}
