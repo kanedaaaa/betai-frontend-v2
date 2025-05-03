@@ -5,7 +5,7 @@ import { useState } from "react";
 import Filter from "@/components/Filter";
 import Game from "@/components/Game";
 import { Country, League, Game as GameType } from "@/types";
-import Analysis from "@/components/Analysis";
+import UtilityWindow from "@/components/UtilityWindow";
 import TicketCreator from "@/components/TicketCreator";
 
 interface TicketGame {
@@ -183,7 +183,11 @@ export default function Home() {
             )}
           </div>
 
-          <Analysis game={selectedGame} onClose={() => setSelectedGame(null)} />
+          <UtilityWindow
+            game={selectedGame}
+            onClose={() => setSelectedGame(null)}
+            onCreateTicket={handleCreateTicket}
+          />
         </div>
       </div>
 

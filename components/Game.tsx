@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Game as GameType } from "@/types";
 import { LazyImage } from "@/components/LazyImage";
-import Analysis from "./Analysis";
+import UtilityWindow from "./UtilityWindow";
 
 interface GameProps {
   leagueId?: number;
@@ -142,7 +142,8 @@ const Game = ({
             </div>
             {selectedGame?.fixture_id === game.fixture_id ? (
               <div className="block xl:hidden mt-4 pt-4 border-t border-[#4D4F5C]">
-                <Analysis game={game} onClose={() => onGameSelect(null)} />
+                {/* @ts-ignore */}
+                <UtilityWindow game={game} onClose={() => onGameSelect(null)} />
               </div>
             ) : (
               <div className="justify-between gap-2 mt-4 pt-4 border-t border-[#4D4F5C]">
