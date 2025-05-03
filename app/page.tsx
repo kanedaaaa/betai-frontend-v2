@@ -42,11 +42,12 @@ export default function Home() {
   const [selectedGame, setSelectedGame] = useState<GameType | null>(null);
   const [ticketGames, setTicketGames] = useState<GameType[]>([]);
   const [isTicketActive, setIsTicketActive] = useState(false);
+  const [isFilterActive, setIsFilterActive] = useState(false);
 
   const handleCreateTicket = async (minOdd: string, maxOdd: string) => {
     try {
       const response = await fetch(
-        `https://backend.betaisports.net/ticket-creator/?min_odd=${minOdd}&max_odd=${maxOdd}`,
+        `https://backend.betaisports.net/ticket-creator/?min_odd=${minOdd}&max_odd=${maxOdd}`
       );
       const data: TicketResponse = await response.json();
 
@@ -54,7 +55,7 @@ export default function Home() {
       // Fetch fixture details for each game
       const fixturePromises = data.ticket.map(async (game) => {
         const fixtureResponse = await fetch(
-          `https://backend.betaisports.net/fixture/${game.fixture_id}/`,
+          `https://backend.betaisports.net/fixture/${game.fixture_id}/`
         );
         const fixtureData: Fixture = await fixtureResponse.json();
 
@@ -74,9 +75,30 @@ export default function Home() {
       const games = await Promise.all(fixturePromises);
       setTicketGames(games);
       setIsTicketActive(true);
+      setIsFilterActive(false);
       setIsTicketOpen(false);
     } catch (error) {
       console.error("Error creating ticket:", error);
+    }
+  };
+
+  const handleCountrySelect = (country: Country | null) => {
+    setSelectedCountry(country);
+    if (country) {
+      setIsFilterActive(true);
+      setIsTicketActive(false);
+    } else {
+      setIsFilterActive(false);
+    }
+  };
+
+  const handleLeagueSelect = (league: League | null) => {
+    setSelectedLeague(league);
+    if (league) {
+      setIsFilterActive(true);
+      setIsTicketActive(false);
+    } else if (!selectedCountry) {
+      setIsFilterActive(false);
     }
   };
 
@@ -96,11 +118,16 @@ export default function Home() {
           >
             <Ticket className="w-5 h-5" />
           </button>
-          <button className="bg-[#02a875] text-white p-2 rounded">
+          <button
+            className="bg-[#02a875] text-white p-2 rounded"
+            onClick={() => setIsFilterOpen(true)}
+          >
             <FilterIcon className="w-5 h-5" />
           </button>
           <button
-            className="bg-[#02a875] text-white p-2 rounded"
+            className={`text-white p-2 rounded ${
+              isFilterActive ? "bg-red-500" : "bg-[#02a875]"
+            }`}
             onClick={() => setIsFilterOpen(true)}
           >
             <ListFilterPlus className="w-5 h-5" />
@@ -131,8 +158,8 @@ export default function Home() {
             <Filter
               selectedCountry={selectedCountry}
               selectedLeague={selectedLeague}
-              onCountrySelect={setSelectedCountry}
-              onLeagueSelect={setSelectedLeague}
+              onCountrySelect={handleCountrySelect}
+              onLeagueSelect={handleLeagueSelect}
             />
           </div>
 
@@ -172,8 +199,8 @@ export default function Home() {
             <Filter
               selectedCountry={selectedCountry}
               selectedLeague={selectedLeague}
-              onCountrySelect={setSelectedCountry}
-              onLeagueSelect={setSelectedLeague}
+              onCountrySelect={handleCountrySelect}
+              onLeagueSelect={handleLeagueSelect}
             />
           </div>
         </div>
@@ -181,10 +208,18 @@ export default function Home() {
 
       {isTicketOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <TicketCreator
-            onClose={() => setIsTicketOpen(false)}
-            onCreateTicket={handleCreateTicket}
-          />
+          <div className="relative">
+            <button
+              onClick={() => setIsTicketOpen(false)}
+              className="absolute -top-4 -right-4 bg-black rounded-full p-1 border border-[#4D4F5C] hover:bg-gray-800 transition-colors"
+            >
+              <X className="w-4 h-4 text-white" />
+            </button>
+            <TicketCreator
+              onClose={() => setIsTicketOpen(false)}
+              onCreateTicket={handleCreateTicket}
+            />
+          </div>
         </div>
       )}
     </div>

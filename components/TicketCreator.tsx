@@ -62,7 +62,7 @@ export default function TicketCreator({
       >
         <X className="w-4 h-4 text-white" />
       </button>
-      <div className="bg-black p-4 rounded-lg w-[90vw] max-w-md">
+      <div className="bg-[#07070A] border border-[#4D4F5C] rounded-lg p-6 w-[90vw] max-w-md">
         <div className="space-y-4">
           <div className="flex gap-4">
             <div className="flex-1">
@@ -109,7 +109,7 @@ export default function TicketCreator({
               {ticketGames.map((game) => (
                 <div
                   key={game.fixture_id}
-                  className="border border-red-500 rounded-lg p-2"
+                  className="border border-[#4D4F5C] rounded-lg p-2"
                 >
                   {fixtures[game.fixture_id] && (
                     <Game
