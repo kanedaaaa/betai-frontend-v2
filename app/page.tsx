@@ -47,7 +47,6 @@ export default function Home() {
   const [isFilterActive, setIsFilterActive] = useState(false);
 
   const handleCreateTicket = async (minOdd: string, maxOdd: string) => {
-    if (!selectedGame) return;
     setIsTicketActive(true);
     try {
       const response = await fetch(
