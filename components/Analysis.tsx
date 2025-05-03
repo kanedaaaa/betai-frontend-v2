@@ -164,12 +164,20 @@ const Analysis = ({ game, onClose }: AnalysisProps) => {
         )}
       </div>
       <div
-        className={`hidden xl:block bg-black rounded-[12px] border border-white/50 self-end transition-all duration-500 ease-in-out ${
-          isExpanded ? "h-[600px] w-[400px]" : "h-[300px] w-[400px]"
+        className={`hidden xl:block bg-black rounded-[12px] border border-white/50 self-end transition-all duration-500 ease-in-out relative ${
+          isExpanded ? "h-[600px] w-[400px]" : "h-[150px] w-[400px]"
         }`}
       >
         {game ? (
           <div className="h-full">
+            <div className="absolute top-4 right-4 z-10">
+              <button
+                onClick={onClose}
+                className="p-1 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <X className="w-4 h-4 text-white/70" />
+              </button>
+            </div>
             {isLoading ? (
               <div className="flex justify-center items-center h-full">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
@@ -203,8 +211,22 @@ const Analysis = ({ game, onClose }: AnalysisProps) => {
             )}
           </div>
         ) : (
-          <div className="flex justify-center items-center h-full text-white/50">
-            Select a game to view analysis
+          <div className="h-full flex flex-col">
+            <div className="p-4 flex flex-row justify-between items-center border-b border-white/10">
+              <h2 className="font-semibold text-[20px] text-white">
+                AI Analysis
+              </h2>
+              <div className="flex justify-center items-center py-[1px] px-2 bg-[rgba(2,168,117,0.25)] rounded-[5px]">
+                <span className="text-[13px] text-[#02A976]">BetAI 0.1</span>
+              </div>
+            </div>
+            <div className="flex justify-center items-center flex-1">
+              <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-[300px] flex justify-center items-center p-4">
+                <span className="flex justify-center items-center py-2 px-4 bg-gradient-to-r from-[#03E9A2] to-[#02835B] rounded-[8px] font-extrabold text-[14px] text-white">
+                  Choose a game to analyse
+                </span>
+              </div>
+            </div>
           </div>
         )}
       </div>
