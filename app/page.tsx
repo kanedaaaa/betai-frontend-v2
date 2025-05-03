@@ -46,14 +46,15 @@ export default function Home() {
   const handleCreateTicket = async (minOdd: string, maxOdd: string) => {
     try {
       const response = await fetch(
-        `https://backend.betaisports.net/ticket-creator/?min_odd=${minOdd}&max_odd=${maxOdd}`
+        `https://backend.betaisports.net/ticket-creator/?min_odd=${minOdd}&max_odd=${maxOdd}`,
       );
       const data: TicketResponse = await response.json();
 
+      console.log(data);
       // Fetch fixture details for each game
       const fixturePromises = data.ticket.map(async (game) => {
         const fixtureResponse = await fetch(
-          `https://backend.betaisports.net/fixture/${game.fixture_id}/`
+          `https://backend.betaisports.net/fixture/${game.fixture_id}/`,
         );
         const fixtureData: Fixture = await fixtureResponse.json();
 

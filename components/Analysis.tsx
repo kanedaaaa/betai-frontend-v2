@@ -9,22 +9,23 @@ interface AnalysisProps {
 
 const StatBar = ({
   label,
-  value,
+  value = 0,
   maxValue = 5,
   color = "bg-primary",
 }: {
   label: string;
-  value: number;
+  value?: number;
   maxValue?: number;
   color?: string;
 }) => {
-  const percentage = Math.min((value / maxValue) * 100, 100);
+  const safeValue = typeof value === "number" ? value : 0;
+  const percentage = Math.min((safeValue / maxValue) * 100, 100);
 
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-xs">
         <span className="text-white/50">{label}</span>
-        <span className="text-white">{value.toFixed(1)}</span>
+        <span className="text-white">{safeValue.toFixed(1)}</span>
       </div>
       <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
         <div
@@ -104,7 +105,7 @@ const Analysis = ({ game, onClose }: AnalysisProps) => {
     const fetchAnalysis = async () => {
       try {
         const response = await fetch(
-          `https://backend.betaisports.net/analyze/${game.fixture_id}`
+          `https://backend.betaisports.net/analyze/${game.fixture_id}`,
         );
         const data = await response.json();
         setAnalysis(data);
