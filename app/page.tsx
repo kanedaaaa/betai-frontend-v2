@@ -6,12 +6,78 @@ import Filter from "@/components/Filter";
 import Game from "@/components/Game";
 import { Country, League, Game as GameType } from "@/types";
 import Analysis from "@/components/Analysis";
+import TicketCreator from "@/components/TicketCreator";
+
+interface TicketGame {
+  fixture_id: number;
+  field: string;
+  label: string;
+  odd: number;
+}
+
+interface TicketResponse {
+  total_odd: number;
+  ticket: TicketGame[];
+}
+
+interface Fixture {
+  fixture_id: number;
+  league: number;
+  home_team: string;
+  home_team_logo: string;
+  home_team_id: number;
+  away_team: string;
+  away_team_logo: string;
+  away_team_id: number;
+  date: string;
+  league_name: string;
+  league_logo: string;
+}
 
 export default function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isTicketOpen, setIsTicketOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [selectedLeague, setSelectedLeague] = useState<League | null>(null);
   const [selectedGame, setSelectedGame] = useState<GameType | null>(null);
+  const [ticketGames, setTicketGames] = useState<GameType[]>([]);
+  const [isTicketActive, setIsTicketActive] = useState(false);
+
+  const handleCreateTicket = async (minOdd: string, maxOdd: string) => {
+    try {
+      const response = await fetch(
+        `https://backend.betaisports.net/ticket-creator/?min_odd=${minOdd}&max_odd=${maxOdd}`
+      );
+      const data: TicketResponse = await response.json();
+
+      // Fetch fixture details for each game
+      const fixturePromises = data.ticket.map(async (game) => {
+        const fixtureResponse = await fetch(
+          `https://backend.betaisports.net/fixture/${game.fixture_id}/`
+        );
+        const fixtureData: Fixture = await fixtureResponse.json();
+
+        return {
+          ...fixtureData,
+          league_name: "Ticket Game",
+          league_logo: "https://media.api-sports.io/football/leagues/39.png",
+          odds: {
+            [game.field]: {
+              label: game.label,
+              value: game.odd,
+            },
+          },
+        } as GameType;
+      });
+
+      const games = await Promise.all(fixturePromises);
+      setTicketGames(games);
+      setIsTicketActive(true);
+      setIsTicketOpen(false);
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+    }
+  };
 
   return (
     <div>
@@ -21,7 +87,12 @@ export default function Home() {
           <SportSelector />
         </div>
         <div className="flex justify-center items-center h-[54px] bg-black border-b border-[#4D4F5C] gap-3 ">
-          <button className="bg-[#02a875] text-white p-2 rounded">
+          <button
+            className={`text-white p-2 rounded ${
+              isTicketActive ? "bg-red-500" : "bg-[#02a875]"
+            }`}
+            onClick={() => setIsTicketOpen(true)}
+          >
             <Ticket className="w-5 h-5" />
           </button>
           <button className="bg-[#02a875] text-white p-2 rounded">
@@ -35,11 +106,20 @@ export default function Home() {
           </button>
         </div>
         <div>
-          <Game
-            leagueId={selectedLeague?.leagueID}
-            selectedGame={selectedGame}
-            onGameSelect={setSelectedGame}
-          />
+          {isTicketActive ? (
+            <Game
+              leagueId={undefined}
+              selectedGame={selectedGame}
+              onGameSelect={setSelectedGame}
+              games={ticketGames}
+            />
+          ) : (
+            <Game
+              leagueId={selectedLeague?.leagueID}
+              selectedGame={selectedGame}
+              onGameSelect={setSelectedGame}
+            />
+          )}
         </div>
       </div>
 
@@ -59,11 +139,20 @@ export default function Home() {
             <div className="absolute -top-[0px] left-0 w-full">
               <SportSelector />
             </div>
-            <Game
-              leagueId={selectedLeague?.leagueID}
-              selectedGame={selectedGame}
-              onGameSelect={setSelectedGame}
-            />
+            {isTicketActive ? (
+              <Game
+                leagueId={undefined}
+                selectedGame={selectedGame}
+                onGameSelect={setSelectedGame}
+                games={ticketGames}
+              />
+            ) : (
+              <Game
+                leagueId={selectedLeague?.leagueID}
+                selectedGame={selectedGame}
+                onGameSelect={setSelectedGame}
+              />
+            )}
           </div>
 
           <Analysis game={selectedGame} onClose={() => setSelectedGame(null)} />
@@ -86,6 +175,15 @@ export default function Home() {
               onLeagueSelect={setSelectedLeague}
             />
           </div>
+        </div>
+      )}
+
+      {isTicketOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <TicketCreator
+            onClose={() => setIsTicketOpen(false)}
+            onCreateTicket={handleCreateTicket}
+          />
         </div>
       )}
     </div>

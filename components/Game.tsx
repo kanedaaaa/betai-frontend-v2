@@ -7,9 +7,15 @@ interface GameProps {
   leagueId?: number;
   selectedGame: GameType | null;
   onGameSelect: (game: GameType | null) => void;
+  games?: GameType[];
 }
 
-const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
+const Game = ({
+  leagueId,
+  selectedGame,
+  onGameSelect,
+  games: providedGames,
+}: GameProps) => {
   const [games, setGames] = useState<GameType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,10 +41,14 @@ const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
       }
     };
 
-    fetchGames();
-  }, [leagueId]);
+    if (!providedGames) {
+      fetchGames();
+    }
+  }, [leagueId, providedGames]);
 
-  if (!leagueId) {
+  const displayGames = providedGames || games;
+
+  if (!leagueId && !providedGames) {
     return (
       <div className="hidden xl:block">
         <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
@@ -50,7 +60,7 @@ const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading && !providedGames) {
     return (
       <div className="hidden xl:block">
         <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
@@ -62,7 +72,7 @@ const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
     );
   }
 
-  if (games.length === 0) {
+  if (displayGames.length === 0) {
     return (
       <div className="hidden xl:block">
         <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
@@ -77,7 +87,7 @@ const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
   return (
     <>
       <div className="block xl:hidden p-4">
-        {games.map((game) => (
+        {displayGames.map((game) => (
           <div
             key={game.fixture_id}
             className="mb-4 p-4 bg-black rounded-lg border border-[#4D4F5C]"
@@ -150,7 +160,7 @@ const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
 
       <div className="hidden xl:block">
         <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col overflow-y-auto">
-          {games.map((game) => (
+          {displayGames.map((game) => (
             <div
               key={game.fixture_id}
               className="p-6 border-b border-[#4D4F5C]"
