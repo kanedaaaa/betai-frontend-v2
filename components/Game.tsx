@@ -13,6 +13,41 @@ interface GameProps {
   onDateSelect?: (date: Date) => void;
 }
 
+const GameSkeleton = () => (
+  <div className="p-6 border-b border-[#4D4F5C] animate-pulse">
+    <div className="flex items-center justify-between">
+      <div className="flex-1">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-[#4D4F5C]" />
+            <div className="h-4 w-24 bg-[#4D4F5C] rounded" />
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-16 bg-[#4D4F5C] rounded" />
+            <div className="h-4 w-24 bg-[#4D4F5C] rounded" />
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1 flex items-center gap-2 min-w-0">
+            <div className="w-8 h-8 rounded-full bg-[#4D4F5C]" />
+            <div className="h-4 w-32 bg-[#4D4F5C] rounded" />
+          </div>
+          <div className="flex-shrink-0 px-2">
+            <div className="h-4 w-4 bg-[#4D4F5C] rounded" />
+          </div>
+          <div className="flex-1 flex items-center gap-2 min-w-0 justify-end">
+            <div className="h-4 w-32 bg-[#4D4F5C] rounded" />
+            <div className="w-8 h-8 rounded-full bg-[#4D4F5C]" />
+          </div>
+        </div>
+      </div>
+      <div className="ml-6">
+        <div className="h-9 w-24 bg-[#4D4F5C] rounded-lg" />
+      </div>
+    </div>
+  </div>
+);
+
 const Game = ({
   leagueId,
   selectedGame,
@@ -67,7 +102,7 @@ const Game = ({
   if (!leagueId && !selectedDate && !providedGames) {
     return (
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[1000px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+        <div className="relative w-[570px] h-[673px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
           {onDateSelect && (
             <DateSelector
               selectedDate={new Date()}
@@ -85,15 +120,17 @@ const Game = ({
   if (isLoading && !providedGames) {
     return (
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[800px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+        <div className="relative w-[570px] h-[673px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
           {!leagueId && onDateSelect && selectedDate && (
             <DateSelector
               selectedDate={selectedDate}
               onDateSelect={onDateSelect}
             />
           )}
-          <div className="flex justify-center items-center h-full">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          <div className="flex-1 overflow-y-auto">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <GameSkeleton key={index} />
+            ))}
           </div>
         </div>
       </div>
@@ -103,7 +140,7 @@ const Game = ({
   if (displayGames.length === 0) {
     return (
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[800px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+        <div className="relative w-[570px] h-[673px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
           {!leagueId && onDateSelect && selectedDate && (
             <DateSelector
               selectedDate={selectedDate}
