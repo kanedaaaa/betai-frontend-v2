@@ -190,7 +190,7 @@ export default function UtilityWindow({
                           type="number"
                           value={minOdd}
                           onChange={(e) => setMinOdd(e.target.value)}
-                          className="w-full bg-[#1A1A1A] border border-[#4D4F5C] rounded px-3 py-2 text-white"
+                          className="w-full bg-[#1A1A1A] border border-[#4D4F5C] rounded px-3 py-2 text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           placeholder="e.g. 5"
                         />
                       </div>
@@ -202,7 +202,7 @@ export default function UtilityWindow({
                           type="number"
                           value={maxOdd}
                           onChange={(e) => setMaxOdd(e.target.value)}
-                          className="w-full bg-[#1A1A1A] border border-[#4D4F5C] rounded px-3 py-2 text-white"
+                          className="w-full bg-[#1A1A1A] border border-[#4D4F5C] rounded px-3 py-2 text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           placeholder="e.g. 10"
                         />
                       </div>
@@ -312,7 +312,7 @@ export default function UtilityWindow({
                       type="number"
                       value={minOdd}
                       onChange={(e) => setMinOdd(e.target.value)}
-                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm"
+                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder="5"
                     />
                     <span className="text-white/50 text-sm">TO</span>
@@ -320,7 +320,7 @@ export default function UtilityWindow({
                       type="number"
                       value={maxOdd}
                       onChange={(e) => setMaxOdd(e.target.value)}
-                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm"
+                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder="10"
                     />
                     <button
@@ -391,7 +391,7 @@ export default function UtilityWindow({
                       type="number"
                       value={minOdd}
                       onChange={(e) => setMinOdd(e.target.value)}
-                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm"
+                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder="5"
                     />
                     <span className="text-white/50 text-sm">TO</span>
@@ -399,7 +399,7 @@ export default function UtilityWindow({
                       type="number"
                       value={maxOdd}
                       onChange={(e) => setMaxOdd(e.target.value)}
-                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm"
+                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder="10"
                     />
                     <button
