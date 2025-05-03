@@ -63,7 +63,7 @@ const SportSelector = () => {
   const DesktopVersion = () => (
     <div
       ref={containerRef}
-      className="frost-effect absolute -top-[70px] left-0 w-full h-[50px] bg-black rounded-[100px] border border-white/50 flex justify-between items-center p-2 hidden xl:flex"
+      className="absolute -top-[70px] left-0 w-full h-[50px] bg-black/30 backdrop-blur-xl rounded-[100px] border border-white/50 flex justify-between items-center p-2 hidden xl:flex"
     >
       <motion.div
         initial={false}

@@ -41,7 +41,7 @@ const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
   if (!leagueId) {
     return (
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[600px] bg-black rounded-[12px] border border-white/50 flex flex-col">
+        <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
           <div className="flex justify-center items-center h-full text-white/50">
             Select a league to view games
           </div>
@@ -53,7 +53,7 @@ const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
   if (isLoading) {
     return (
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[600px] bg-black rounded-[12px] border border-white/50 flex flex-col">
+        <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
           <div className="flex justify-center items-center h-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
           </div>
@@ -65,7 +65,7 @@ const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
   if (games.length === 0) {
     return (
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[600px] bg-black rounded-[12px] border border-white/50 flex flex-col">
+        <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
           <div className="flex justify-center items-center h-full text-white/50">
             No games found
           </div>
@@ -149,7 +149,7 @@ const Game = ({ leagueId, selectedGame, onGameSelect }: GameProps) => {
       </div>
 
       <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[600px] bg-black rounded-[12px] border border-white/50 flex flex-col overflow-y-auto">
+        <div className="relative w-[570px] h-[600px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col overflow-y-auto">
           {games.map((game) => (
             <div
               key={game.fixture_id}

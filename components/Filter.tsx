@@ -232,7 +232,7 @@ const Filter = ({
   // Mobile version
   if (responsiveDesign) {
     return (
-      <div className="frost-effect w-full flex flex-col bg-black border-b border-white/10">
+      <div className="w-full flex flex-col bg-black border-b border-white/10">
         <div className="w-full flex justify-center items-center h-[70px] px-4">
           <SearchBar
             value={searchQuery}
@@ -321,7 +321,7 @@ const Filter = ({
 
   // Desktop version
   return (
-    <div className="frost-effect w-[240px] h-[600px] bg-black rounded-[12px] border border-white/50 flex flex-col items-center shadow-lg">
+    <div className="w-[240px] h-[600px] bg-black/50 backdrop-blur-md rounded-[12px] border border-white/50 overflow-y-auto">
       <div className="w-full flex justify-center items-center mt-2">
         <SearchBar
           value={searchQuery}

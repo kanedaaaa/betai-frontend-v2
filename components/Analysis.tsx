@@ -164,7 +164,7 @@ const Analysis = ({ game, onClose }: AnalysisProps) => {
         )}
       </div>
       <div
-        className={`hidden xl:block bg-black rounded-[12px] border border-white/50 self-end transition-all duration-500 ease-in-out relative ${
+        className={`hidden xl:block bg-black/50 backdrop-blur-md rounded-[12px] border border-white/50 self-end transition-all duration-500 ease-in-out relative ${
           isExpanded ? "h-[600px] w-[400px]" : "h-[150px] w-[400px]"
         }`}
       >

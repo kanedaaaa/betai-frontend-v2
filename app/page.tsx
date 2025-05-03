@@ -46,7 +46,7 @@ export default function Home() {
       {/* Desktop Layout */}
       <div className="hidden xl:flex justify-center items-start mt-[90px]">
         <div className="flex">
-          <div className="w-[300px] mr-[10px]">
+          <div className="w-[300px] mr-[-20px]">
             <Filter
               selectedCountry={selectedCountry}
               selectedLeague={selectedLeague}
