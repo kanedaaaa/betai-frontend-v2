@@ -50,11 +50,11 @@ const StatCard = ({
   isCombined?: boolean;
 }) => {
   return (
-    <div className={`space-y-5 ${!isCombined ? "xl:h-[280px]" : ""}`}>
+    <div className={`space-y-3 ${!isCombined ? "xl:h-[280px]" : ""}`}>
       <h3 className="text-sm xl:text-[1rem] font-semibold text-white/70">
         {title}
       </h3>
-      <div className="space-y-4">
+      <div className="space-y-2">
         <StatBar
           label="Goals"
           value={stats.avg_goals}
@@ -232,18 +232,15 @@ export default function UtilityWindow({
       >
         {game ? (
           <div className="h-full">
-            <div className="absolute top-4 right-4 z-10">
-              <button
-                onClick={onClose}
-                className="p-1 hover:bg-white/10 rounded-full transition-colors"
-              >
-                <X className="w-4 h-4 text-white/70" />
-              </button>
-            </div>
             <div className="p-4 flex flex-row justify-between items-center border-b border-white/10">
               <div className="flex gap-2">
                 <button
-                  onClick={() => setMode("analysis")}
+                  onClick={() => {
+                    setMode("analysis");
+                    if (game) {
+                      setIsExpanded(true);
+                    }
+                  }}
                   className={`p-2 rounded-full transition-colors ${
                     mode === "analysis"
                       ? "bg-[#02a875]"
@@ -273,8 +270,18 @@ export default function UtilityWindow({
                   <Filter className="w-5 h-5 text-white" />
                 </button>
               </div>
-              <div className="flex justify-center items-center py-[1px] px-2 bg-[rgba(2,168,117,0.25)] rounded-[5px]">
-                <span className="text-[13px] text-[#02A976]">BetAI 0.1</span>
+              <div className="flex items-center gap-2">
+                <div className="flex justify-center items-center py-[1px] px-2 bg-[rgba(2,168,117,0.25)] rounded-[5px]">
+                  <span className="text-[13px] text-[#02A976]">BetAI 0.1</span>
+                </div>
+                {mode !== "ticket" && (
+                  <button
+                    onClick={onClose}
+                    className="p-1 hover:bg-white/10 rounded-full transition-colors"
+                  >
+                    <X className="w-4 h-4 text-white/70" />
+                  </button>
+                )}
               </div>
             </div>
             {isLoading ? (
@@ -283,7 +290,7 @@ export default function UtilityWindow({
               </div>
             ) : mode === "analysis" && analysis ? (
               <div
-                className={`p-4 space-y-6 transition-opacity duration-300 ${
+                className={`p-4 space-y-0 transition-opacity duration-300 ${
                   isExpanded ? "opacity-100" : "opacity-0"
                 }`}
               >
@@ -304,7 +311,7 @@ export default function UtilityWindow({
                 />
               </div>
             ) : mode === "ticket" ? (
-              <div className="flex justify-center items-center flex-1">
+              <div className="flex justify-center items-center flex-1 mt-4">
                 <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-[300px] h-[100px] flex justify-center items-center p-4">
                   <div className="flex items-center gap-2">
                     <span className="text-white/50 text-sm">FROM</span>
@@ -348,7 +355,12 @@ export default function UtilityWindow({
             <div className="p-4 flex flex-row justify-between items-center border-b border-white/10">
               <div className="flex gap-2">
                 <button
-                  onClick={() => setMode("analysis")}
+                  onClick={() => {
+                    setMode("analysis");
+                    if (game) {
+                      setIsExpanded(true);
+                    }
+                  }}
                   className={`p-2 rounded-full transition-colors ${
                     mode === "analysis"
                       ? "bg-[#02a875]"
