@@ -239,7 +239,7 @@ export default function UtilityWindow({
                       disabled={isCreatingTicket}
                       className="w-full bg-[#02a875] text-white py-2 rounded hover:bg-[#029a6a] transition-colors disabled:opacity-50"
                     >
-                      {isCreatingTicket ? "Creating..." : "Create Ticket"}
+                      {isCreatingTicket ? "Creating" : "Create Ticket"}
                     </button>
                   </div>
                 </div>
@@ -357,7 +357,7 @@ export default function UtilityWindow({
                       disabled={isCreatingTicket}
                       className="bg-[#02a875] text-white px-4 py-1 rounded text-sm hover:bg-[#029a6a] transition-colors disabled:opacity-50 ml-2"
                     >
-                      {isCreatingTicket ? "Creating..." : "CREATE"}
+                      {isCreatingTicket ? "Creating" : "CREATE"}
                     </button>
                   </div>
                 </div>
@@ -463,7 +463,7 @@ export default function UtilityWindow({
                       disabled={isCreatingTicket}
                       className="bg-[#02a875] text-white px-4 py-1 rounded text-sm hover:bg-[#029a6a] transition-colors disabled:opacity-50 ml-2"
                     >
-                      {isCreatingTicket ? "Creating..." : "CREATE"}
+                      {isCreatingTicket ? "Creating" : "CREATE"}
                     </button>
                   </div>
                 </div>

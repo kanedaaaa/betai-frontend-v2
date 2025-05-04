@@ -54,7 +54,6 @@ export default function Home() {
       );
       const data: TicketResponse = await response.json();
 
-      console.log(data);
       // Fetch fixture details for each game
       const fixturePromises = data.ticket.map(async (game) => {
         const fixtureResponse = await fetch(
@@ -64,8 +63,8 @@ export default function Home() {
 
         return {
           ...fixtureData,
-          league_name: "Ticket Game",
-          league_logo: "https://media.api-sports.io/football/leagues/39.png",
+          league_name: String(fixtureData.league),
+          league_logo: fixtureData.league_logo,
           odds: {
             [game.field]: {
               label: game.label,

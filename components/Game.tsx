@@ -223,10 +223,10 @@ const Game = ({
                 <UtilityWindow game={game} onClose={() => onGameSelect(null)} />
               </div>
             ) : (
-              <div className="justify-between gap-2 mt-4 pt-4 border-t border-[#4D4F5C]">
+              <div className="flex justify-center mt-4 pt-4 border-t border-[#4D4F5C]">
                 <button
                   onClick={() => onGameSelect(game)}
-                  className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
+                  className="w-32 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
                 >
                   Analyse
                 </button>

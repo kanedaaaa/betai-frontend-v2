@@ -95,7 +95,7 @@ export default function TicketCreator({
             disabled={isLoading}
             className="w-full bg-[#02a875] text-white py-2 rounded hover:bg-[#029a6a] transition-colors disabled:opacity-50"
           >
-            {isLoading ? "Creating..." : "Create Ticket"}
+            {isLoading ? "Creating" : "Create Ticket"}
           </button>
 
           {ticketGames.length > 0 && (

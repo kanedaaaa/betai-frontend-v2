@@ -15,7 +15,7 @@ const DateSelector = ({ selectedDate, onDateSelect }: DateSelectorProps) => {
   });
 
   return (
-    <div className="flex items-center justify-between w-full px-4 py-2">
+    <div className="flex items-center justify-between w-full px-4 py-2 mb-4">
       {dates.map((date, index) => {
         const dayName =
           index === 0
