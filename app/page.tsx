@@ -7,6 +7,7 @@ import Game from "@/components/Game";
 import { Country, League, Game as GameType } from "@/types";
 import UtilityWindow from "@/components/UtilityWindow";
 import TicketCreator from "@/components/TicketCreator";
+import OddFilterizer from "@/components/OddFilterizer";
 
 interface TicketGame {
   fixture_id: number;
@@ -37,6 +38,7 @@ interface Fixture {
 export default function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isTicketOpen, setIsTicketOpen] = useState(false);
+  const [isOddFilterizerOpen, setIsOddFilterizerOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [selectedLeague, setSelectedLeague] = useState<League | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
@@ -45,6 +47,8 @@ export default function Home() {
   const [ticketGames, setTicketGames] = useState<GameType[]>([]);
   const [isTicketActive, setIsTicketActive] = useState(false);
   const [isFilterActive, setIsFilterActive] = useState(false);
+  const [filteredGames, setFilteredGames] = useState<GameType[]>([]);
+  const [isFilterizerActive, setIsFilterizerActive] = useState(false);
 
   const handleCreateTicket = async (minOdd: string, maxOdd: string) => {
     setIsTicketActive(true);
@@ -107,6 +111,18 @@ export default function Home() {
     }
   };
 
+  const handleFilteredGames = (games: GameType[]) => {
+    setFilteredGames(games);
+    setIsTicketActive(false);
+    setIsFilterizerActive(true);
+  };
+
+  const handleClearFilterizer = () => {
+    setFilteredGames([]);
+    setIsFilterizerActive(false);
+    setSelectedDate(new Date());
+  };
+
   return (
     <div>
       {/* Mobile Layout */}
@@ -131,9 +147,9 @@ export default function Home() {
           </button>
           <button
             className={`text-white p-2 rounded ${
-              isFilterActive ? "bg-red-500" : "bg-[#02a875]"
+              isFilterizerActive ? "bg-red-500" : "bg-[#02a875]"
             }`}
-            onClick={() => setIsFilterOpen(true)}
+            onClick={() => setIsOddFilterizerOpen(true)}
           >
             <ListFilterPlus className="w-5 h-5" />
           </button>
@@ -146,6 +162,29 @@ export default function Home() {
               onGameSelect={setSelectedGame}
               games={ticketGames}
             />
+          ) : isFilterizerActive ? (
+            <div>
+              <div className="flex justify-end px-4 py-2">
+                <button
+                  onClick={handleClearFilterizer}
+                  className="text-white/50 text-sm hover:text-white transition-colors"
+                >
+                  Clear
+                </button>
+              </div>
+              {filteredGames.length > 0 ? (
+                <Game
+                  leagueId={undefined}
+                  selectedGame={selectedGame}
+                  onGameSelect={setSelectedGame}
+                  games={filteredGames}
+                />
+              ) : (
+                <div className="flex justify-center items-center h-[200px]">
+                  <span className="text-white/50 text-sm">No games found</span>
+                </div>
+              )}
+            </div>
           ) : (
             <Game
               leagueId={selectedLeague?.leagueID}
@@ -231,6 +270,24 @@ export default function Home() {
             <TicketCreator
               onClose={() => setIsTicketOpen(false)}
               onCreateTicket={handleCreateTicket}
+            />
+          </div>
+        </div>
+      )}
+
+      {isOddFilterizerOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="relative">
+            <button
+              onClick={() => setIsOddFilterizerOpen(false)}
+              className="absolute -top-4 -right-4 bg-black rounded-full p-1 border border-[#4D4F5C] hover:bg-gray-800 transition-colors"
+            >
+              <X className="w-4 h-4 text-white" />
+            </button>
+            <OddFilterizer
+              onClose={() => setIsOddFilterizerOpen(false)}
+              onFilterGames={handleFilteredGames}
+              onClear={handleClearFilterizer}
             />
           </div>
         </div>
