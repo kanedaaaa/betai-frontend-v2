@@ -116,15 +116,18 @@ export default function UtilityWindow({
   };
 
   useEffect(() => {
-    if (!game || mode !== "analysis") {
+    if (!game) {
       setAnalysis(null);
       setIsLoading(false);
       setIsExpanded(false);
       return;
     }
 
+    // When a game is selected, always switch to analysis mode and expand
+    setMode("analysis");
     setIsExpanded(true);
     setIsLoading(true);
+
     const fetchAnalysis = async () => {
       try {
         const response = await fetch(
@@ -140,7 +143,31 @@ export default function UtilityWindow({
     };
 
     fetchAnalysis();
-  }, [game?.fixture_id, mode]);
+  }, [game?.fixture_id]);
+
+  const handleModeChange = (newMode: UtilityMode) => {
+    setMode(newMode);
+    if (newMode === "analysis" && game) {
+      setIsExpanded(true);
+      setIsLoading(true);
+      const fetchAnalysis = async () => {
+        try {
+          const response = await fetch(
+            `https://backend.betaisports.net/analyze/${game.fixture_id}`
+          );
+          const data = await response.json();
+          setAnalysis(data);
+        } catch (error) {
+          console.error("Error fetching analysis:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchAnalysis();
+    } else if (newMode === "ticket") {
+      setIsExpanded(false);
+    }
+  };
 
   return (
     <>
@@ -235,12 +262,7 @@ export default function UtilityWindow({
             <div className="p-4 flex flex-row justify-between items-center border-b border-white/10">
               <div className="flex gap-2">
                 <button
-                  onClick={() => {
-                    setMode("analysis");
-                    if (game) {
-                      setIsExpanded(true);
-                    }
-                  }}
+                  onClick={() => handleModeChange("analysis")}
                   className={`p-2 rounded-full transition-colors ${
                     mode === "analysis"
                       ? "bg-[#02a875]"
@@ -250,7 +272,7 @@ export default function UtilityWindow({
                   <BarChart2 className="w-5 h-5 text-white" />
                 </button>
                 <button
-                  onClick={() => setMode("ticket")}
+                  onClick={() => handleModeChange("ticket")}
                   className={`p-2 rounded-full transition-colors ${
                     mode === "ticket"
                       ? "bg-[#02a875]"
@@ -290,7 +312,7 @@ export default function UtilityWindow({
               </div>
             ) : mode === "analysis" && analysis ? (
               <div
-                className={`p-4 space-y-0 transition-opacity duration-300 ${
+                className={`p-4 space-y-0 ${
                   isExpanded ? "opacity-100" : "opacity-0"
                 }`}
               >
@@ -359,6 +381,25 @@ export default function UtilityWindow({
                     setMode("analysis");
                     if (game) {
                       setIsExpanded(true);
+                      setTimeout(() => {
+                        setIsLoading(true);
+                        const fetchAnalysis = async () => {
+                          try {
+                            const response = await fetch(
+                              // CURSOR DO NOT REMOVE THIS LINE
+                              // @ts-ignore
+                              `https://backend.betaisports.net/analyze/${game.fixture_id}`
+                            );
+                            const data = await response.json();
+                            setAnalysis(data);
+                          } catch (error) {
+                            console.error("Error fetching analysis:", error);
+                          } finally {
+                            setIsLoading(false);
+                          }
+                        };
+                        fetchAnalysis();
+                      }, 500);
                     }
                   }}
                   className={`p-2 rounded-full transition-colors ${
@@ -370,7 +411,10 @@ export default function UtilityWindow({
                   <BarChart2 className="w-5 h-5 text-white" />
                 </button>
                 <button
-                  onClick={() => setMode("ticket")}
+                  onClick={() => {
+                    setMode("ticket");
+                    setIsExpanded(false);
+                  }}
                   className={`p-2 rounded-full transition-colors ${
                     mode === "ticket"
                       ? "bg-[#02a875]"
