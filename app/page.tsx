@@ -189,21 +189,49 @@ export default function Home() {
         </div>
         <div>
           {isTicketActive ? (
-            <Game
-              leagueId={undefined}
-              selectedGame={selectedGame}
-              onGameSelect={setSelectedGame}
-              games={ticketGames}
-            />
+            <>
+              {ticketGames.length > 0 && (
+                <div className="bg-[#02a875]/20 py-2 px-4 text-center">
+                  <span className="text-[#02a875] font-semibold">
+                    Total Odd:{" "}
+                    {ticketGames
+                      .reduce(
+                        (acc, game) => acc * (game.ticket_info?.odd || 1),
+                        1
+                      )
+                      .toFixed(2)}
+                  </span>
+                </div>
+              )}
+              <Game
+                leagueId={undefined}
+                selectedGame={selectedGame}
+                onGameSelect={setSelectedGame}
+                games={ticketGames}
+              />
+            </>
           ) : isFilterizerActive ? (
             <div>
               {filteredGames.length > 0 ? (
-                <Game
-                  leagueId={undefined}
-                  selectedGame={selectedGame}
-                  onGameSelect={setSelectedGame}
-                  games={filteredGames}
-                />
+                <>
+                  <div className="bg-[#02a875]/20 py-2 px-4 text-center">
+                    <span className="text-[#02a875] font-semibold">
+                      Total Odd:{" "}
+                      {filteredGames
+                        .reduce(
+                          (acc, game) => acc * (game.ticket_info?.odd || 1),
+                          1
+                        )
+                        .toFixed(2)}
+                    </span>
+                  </div>
+                  <Game
+                    leagueId={undefined}
+                    selectedGame={selectedGame}
+                    onGameSelect={setSelectedGame}
+                    games={filteredGames}
+                  />
+                </>
               ) : (
                 <div className="flex justify-center items-center h-[200px]">
                   <span className="text-white/50 text-sm">No games found</span>

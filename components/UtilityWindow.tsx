@@ -257,42 +257,7 @@ export default function UtilityWindow({
         {game && (
           <>
             <div className="flex justify-between items-center mb-4">
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setMode("analysis");
-                  }}
-                  className={`p-2 rounded-full transition-colors ${
-                    mode === "analysis"
-                      ? "bg-[#02a875]"
-                      : "bg-[#1A1A1A] hover:bg-[#2A2A2A]"
-                  }`}
-                >
-                  <BarChart2 className="w-4 h-4 text-white" />
-                </button>
-                <button
-                  onClick={() => {
-                    setMode("ticket");
-                  }}
-                  className={`p-2 rounded-full transition-colors ${
-                    mode === "ticket"
-                      ? "bg-[#02a875]"
-                      : "bg-[#1A1A1A] hover:bg-[#2A2A2A]"
-                  }`}
-                >
-                  <Ticket className="w-4 h-4 text-white" />
-                </button>
-                <button
-                  onClick={() => setMode("filterizer")}
-                  className={`p-2 rounded-full transition-colors ${
-                    mode === "filterizer"
-                      ? "bg-[#02a875]"
-                      : "bg-[#1A1A1A] hover:bg-[#2A2A2A]"
-                  }`}
-                >
-                  <Filter className="w-4 h-4 text-white" />
-                </button>
-              </div>
+              <div></div>
 
               {((mode === "filterizer" &&
                 filteredGames.length > 0 &&
@@ -309,7 +274,7 @@ export default function UtilityWindow({
                 </button>
               )}
             </div>
-            <div className="max-h-[400px] overflow-y-auto pr-2 space-y-6">
+            <div className="max-h-[450px] overflow-y-auto pr-2 space-y-6">
               {isLoading ? (
                 <div className="flex justify-center items-center h-full">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
@@ -374,61 +339,80 @@ export default function UtilityWindow({
                 <div className="space-y-4 w-full">
                   <h3 className="text-white font-semibold">Filtered Games</h3>
                   {showFilteredGames ? (
-                    filteredGames.map((game) => (
-                      <div
-                        key={game.fixture_id}
-                        className="p-3 bg-black/30 border border-white/20 rounded-lg w-full"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <LazyImage
-                              src={game.league_logo}
-                              alt={game.league_name}
-                              className="w-5 h-5"
-                            />
-                            <span className="text-xs text-white/70">
-                              {game.league_name}
-                            </span>
-                          </div>
-                          <div className="text-xs text-white/50">
-                            {new Date(game.date).toLocaleDateString()}
-                          </div>
+                    <div className="max-h-[350px] overflow-y-auto pr-2">
+                      {filteredGames.length > 0 && (
+                        <div className="bg-[#02a875]/20 rounded-lg p-2 mb-3 text-center">
+                          <span className="text-[#02a875] font-semibold">
+                            Total Odd:{" "}
+                            {filteredGames
+                              .reduce(
+                                (acc: number, game: GameType) =>
+                                  acc * (game.ticket_info?.odd || 1),
+                                1
+                              )
+                              .toFixed(2)}
+                          </span>
                         </div>
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1 text-xs">
-                            <LazyImage
-                              src={game.home_team_logo}
-                              alt={game.home_team}
-                              className="w-4 h-4"
-                            />
-                            <span className="text-white truncate max-w-[80px]">
-                              {game.home_team}
-                            </span>
-                          </div>
-                          <span className="text-white/50 text-xs">vs</span>
-                          <div className="flex items-center gap-1 text-xs">
-                            <span className="text-white truncate max-w-[80px]">
-                              {game.away_team}
-                            </span>
-                            <LazyImage
-                              src={game.away_team_logo}
-                              alt={game.away_team}
-                              className="w-4 h-4"
-                            />
-                          </div>
-                        </div>
-                        {game.ticket_info && (
-                          <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
-                            <span className="text-xs text-white/70">
-                              {game.ticket_info.label}
-                            </span>
-                            <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
-                              {game.ticket_info.odd.toFixed(2)}
+                      )}
+                      {filteredGames.map((game) => (
+                        <div
+                          key={game.fixture_id}
+                          className="p-3 bg-black/30 border border-white/20 rounded-lg w-full mb-3"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <LazyImage
+                                src={game.league_logo}
+                                alt={game.league_name}
+                                className="w-5 h-5"
+                              />
+                              <span className="text-xs text-white/70">
+                                {game.league_name}
+                              </span>
+                            </div>
+                            <div className="text-xs text-white/50">
+                              {new Date(game.date).toLocaleDateString()}
                             </div>
                           </div>
-                        )}
-                      </div>
-                    ))
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1 text-xs">
+                              <LazyImage
+                                src={game.home_team_logo}
+                                alt={game.home_team}
+                                className="w-4 h-4"
+                              />
+                              <div className="w-4"></div>
+                              <div className="flex items-center gap-1 text-xs">
+                                <span className="text-white truncate max-w-[80px]">
+                                  {game.home_team}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="w-4"></div>
+                            <div className="flex items-center gap-1 text-xs">
+                              <span className="text-white truncate max-w-[80px]">
+                                {game.away_team}
+                              </span>
+                              <LazyImage
+                                src={game.away_team_logo}
+                                alt={game.away_team}
+                                className="w-4 h-4"
+                              />
+                            </div>
+                          </div>
+                          {game.ticket_info && (
+                            <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
+                              <span className="text-xs text-white/70">
+                                {game.ticket_info.label}
+                              </span>
+                              <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
+                                {game.ticket_info.odd.toFixed(2)}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   ) : (
                     <div className="flex justify-center items-center h-full">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
@@ -538,61 +522,80 @@ export default function UtilityWindow({
                   ) : (
                     <div className="space-y-4">
                       <h3 className="text-white font-semibold">Your Ticket</h3>
-                      {ticketGames.map((game) => (
-                        <div
-                          key={game.fixture_id}
-                          className="p-3 bg-black/30 border border-white/20 rounded-lg"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <LazyImage
-                                src={game.league_logo}
-                                alt={game.league_name}
-                                className="w-5 h-5"
-                              />
-                              <span className="text-xs text-white/70">
-                                {game.league_name}
-                              </span>
-                            </div>
-                            <div className="text-xs text-white/50">
-                              {new Date(game.date).toLocaleDateString()}
-                            </div>
+                      <div className="max-h-[450px] overflow-y-auto pr-2">
+                        {ticketGames.length > 0 && (
+                          <div className="bg-[#02a875]/20 rounded-lg p-2 mb-3 text-center">
+                            <span className="text-[#02a875] font-semibold">
+                              Total Odd:{" "}
+                              {ticketGames
+                                .reduce(
+                                  (acc: number, game: GameType) =>
+                                    acc * (game.ticket_info?.odd || 1),
+                                  1
+                                )
+                                .toFixed(2)}
+                            </span>
                           </div>
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-1 text-xs">
-                              <LazyImage
-                                src={game.home_team_logo}
-                                alt={game.home_team}
-                                className="w-4 h-4"
-                              />
-                              <span className="text-white truncate max-w-[80px]">
-                                {game.home_team}
-                              </span>
-                            </div>
-                            <span className="text-white/50 text-xs">vs</span>
-                            <div className="flex items-center gap-1 text-xs">
-                              <span className="text-white truncate max-w-[80px]">
-                                {game.away_team}
-                              </span>
-                              <LazyImage
-                                src={game.away_team_logo}
-                                alt={game.away_team}
-                                className="w-4 h-4"
-                              />
-                            </div>
-                          </div>
-                          {game.ticket_info && (
-                            <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
-                              <span className="text-xs text-white/70">
-                                {game.ticket_info.label}
-                              </span>
-                              <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
-                                {game.ticket_info.odd.toFixed(2)}
+                        )}
+                        {ticketGames.map((game) => (
+                          <div
+                            key={game.fixture_id}
+                            className="p-3 bg-black/30 border border-white/20 rounded-lg mb-3"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <LazyImage
+                                  src={game.league_logo}
+                                  alt={game.league_name}
+                                  className="w-5 h-5"
+                                />
+                                <span className="text-xs text-white/70">
+                                  {game.league_name}
+                                </span>
+                              </div>
+                              <div className="text-xs text-white/50">
+                                {new Date(game.date).toLocaleDateString()}
                               </div>
                             </div>
-                          )}
-                        </div>
-                      ))}
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1 text-xs">
+                                <LazyImage
+                                  src={game.home_team_logo}
+                                  alt={game.home_team}
+                                  className="w-4 h-4"
+                                />
+                                <div className="w-4"></div>
+                                <div className="flex items-center gap-1 text-xs">
+                                  <span className="text-white truncate max-w-[80px]">
+                                    {game.home_team}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="w-4"></div>
+                              <div className="flex items-center gap-1 text-xs">
+                                <span className="text-white truncate max-w-[80px]">
+                                  {game.away_team}
+                                </span>
+                                <LazyImage
+                                  src={game.away_team_logo}
+                                  alt={game.away_team}
+                                  className="w-4 h-4"
+                                />
+                              </div>
+                            </div>
+                            {game.ticket_info && (
+                              <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
+                                <span className="text-xs text-white/70">
+                                  {game.ticket_info.label}
+                                </span>
+                                <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
+                                  {game.ticket_info.odd.toFixed(2)}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )
                 ) : (
@@ -633,61 +636,80 @@ export default function UtilityWindow({
                   <div className="space-y-4 w-full">
                     <h3 className="text-white font-semibold">Filtered Games</h3>
                     {showFilteredGames ? (
-                      filteredGames.map((game) => (
-                        <div
-                          key={game.fixture_id}
-                          className="p-3 bg-black/30 border border-white/20 rounded-lg w-full"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <LazyImage
-                                src={game.league_logo}
-                                alt={game.league_name}
-                                className="w-5 h-5"
-                              />
-                              <span className="text-xs text-white/70">
-                                {game.league_name}
-                              </span>
-                            </div>
-                            <div className="text-xs text-white/50">
-                              {new Date(game.date).toLocaleDateString()}
-                            </div>
+                      <div className="max-h-[450px] overflow-y-auto pr-2">
+                        {filteredGames.length > 0 && (
+                          <div className="bg-[#02a875]/20 rounded-lg p-2 mb-3 text-center">
+                            <span className="text-[#02a875] font-semibold">
+                              Total Odd:{" "}
+                              {filteredGames
+                                .reduce(
+                                  (acc: number, game: GameType) =>
+                                    acc * (game.ticket_info?.odd || 1),
+                                  1
+                                )
+                                .toFixed(2)}
+                            </span>
                           </div>
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-1 text-xs">
-                              <LazyImage
-                                src={game.home_team_logo}
-                                alt={game.home_team}
-                                className="w-4 h-4"
-                              />
-                              <span className="text-white truncate max-w-[80px]">
-                                {game.home_team}
-                              </span>
-                            </div>
-                            <span className="text-white/50 text-xs">vs</span>
-                            <div className="flex items-center gap-1 text-xs">
-                              <span className="text-white truncate max-w-[80px]">
-                                {game.away_team}
-                              </span>
-                              <LazyImage
-                                src={game.away_team_logo}
-                                alt={game.away_team}
-                                className="w-4 h-4"
-                              />
-                            </div>
-                          </div>
-                          {game.ticket_info && (
-                            <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
-                              <span className="text-xs text-white/70">
-                                {game.ticket_info.label}
-                              </span>
-                              <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
-                                {game.ticket_info.odd.toFixed(2)}
+                        )}
+                        {filteredGames.map((game) => (
+                          <div
+                            key={game.fixture_id}
+                            className="p-3 bg-black/30 border border-white/20 rounded-lg w-full mb-3"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <LazyImage
+                                  src={game.league_logo}
+                                  alt={game.league_name}
+                                  className="w-5 h-5"
+                                />
+                                <span className="text-xs text-white/70">
+                                  {game.league_name}
+                                </span>
+                              </div>
+                              <div className="text-xs text-white/50">
+                                {new Date(game.date).toLocaleDateString()}
                               </div>
                             </div>
-                          )}
-                        </div>
-                      ))
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1 text-xs">
+                                <LazyImage
+                                  src={game.home_team_logo}
+                                  alt={game.home_team}
+                                  className="w-4 h-4"
+                                />
+                                <div className="w-4"></div>
+                                <div className="flex items-center gap-1 text-xs">
+                                  <span className="text-white truncate max-w-[80px]">
+                                    {game.home_team}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="w-4"></div>
+                              <div className="flex items-center gap-1 text-xs">
+                                <span className="text-white truncate max-w-[80px]">
+                                  {game.away_team}
+                                </span>
+                                <LazyImage
+                                  src={game.away_team_logo}
+                                  alt={game.away_team}
+                                  className="w-4 h-4"
+                                />
+                              </div>
+                            </div>
+                            {game.ticket_info && (
+                              <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
+                                <span className="text-xs text-white/70">
+                                  {game.ticket_info.label}
+                                </span>
+                                <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
+                                  {game.ticket_info.odd.toFixed(2)}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     ) : (
                       <div className="flex justify-center items-center h-full">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
@@ -770,61 +792,80 @@ export default function UtilityWindow({
                         <h3 className="text-white font-semibold">
                           Your Ticket
                         </h3>
-                        {ticketGames.map((game) => (
-                          <div
-                            key={game.fixture_id}
-                            className="p-3 bg-black/30 border border-white/20 rounded-lg"
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <LazyImage
-                                  src={game.league_logo}
-                                  alt={game.league_name}
-                                  className="w-5 h-5"
-                                />
-                                <span className="text-xs text-white/70">
-                                  {game.league_name}
-                                </span>
-                              </div>
-                              <div className="text-xs text-white/50">
-                                {new Date(game.date).toLocaleDateString()}
-                              </div>
+                        <div className="max-h-[450px] overflow-y-auto pr-2">
+                          {ticketGames.length > 0 && (
+                            <div className="bg-[#02a875]/20 rounded-lg p-2 mb-3 text-center">
+                              <span className="text-[#02a875] font-semibold">
+                                Total Odd:{" "}
+                                {ticketGames
+                                  .reduce(
+                                    (acc: number, game: GameType) =>
+                                      acc * (game.ticket_info?.odd || 1),
+                                    1
+                                  )
+                                  .toFixed(2)}
+                              </span>
                             </div>
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-1 text-xs">
-                                <LazyImage
-                                  src={game.home_team_logo}
-                                  alt={game.home_team}
-                                  className="w-4 h-4"
-                                />
-                                <span className="text-white truncate max-w-[80px]">
-                                  {game.home_team}
-                                </span>
-                              </div>
-                              <span className="text-white/50 text-xs">vs</span>
-                              <div className="flex items-center gap-1 text-xs">
-                                <span className="text-white truncate max-w-[80px]">
-                                  {game.away_team}
-                                </span>
-                                <LazyImage
-                                  src={game.away_team_logo}
-                                  alt={game.away_team}
-                                  className="w-4 h-4"
-                                />
-                              </div>
-                            </div>
-                            {game.ticket_info && (
-                              <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
-                                <span className="text-xs text-white/70">
-                                  {game.ticket_info.label}
-                                </span>
-                                <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
-                                  {game.ticket_info.odd.toFixed(2)}
+                          )}
+                          {ticketGames.map((game) => (
+                            <div
+                              key={game.fixture_id}
+                              className="p-3 bg-black/30 border border-white/20 rounded-lg mb-3"
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <LazyImage
+                                    src={game.league_logo}
+                                    alt={game.league_name}
+                                    className="w-5 h-5"
+                                  />
+                                  <span className="text-xs text-white/70">
+                                    {game.league_name}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-white/50">
+                                  {new Date(game.date).toLocaleDateString()}
                                 </div>
                               </div>
-                            )}
-                          </div>
-                        ))}
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1 text-xs">
+                                  <LazyImage
+                                    src={game.home_team_logo}
+                                    alt={game.home_team}
+                                    className="w-4 h-4"
+                                  />
+                                  <div className="w-4"></div>
+                                  <div className="flex items-center gap-1 text-xs">
+                                    <span className="text-white truncate max-w-[80px]">
+                                      {game.home_team}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="w-4"></div>
+                                <div className="flex items-center gap-1 text-xs">
+                                  <span className="text-white truncate max-w-[80px]">
+                                    {game.away_team}
+                                  </span>
+                                  <LazyImage
+                                    src={game.away_team_logo}
+                                    alt={game.away_team}
+                                    className="w-4 h-4"
+                                  />
+                                </div>
+                              </div>
+                              {game.ticket_info && (
+                                <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
+                                  <span className="text-xs text-white/70">
+                                    {game.ticket_info.label}
+                                  </span>
+                                  <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
+                                    {game.ticket_info.odd.toFixed(2)}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )
@@ -867,61 +908,80 @@ export default function UtilityWindow({
                         Filtered Games
                       </h3>
                       {showFilteredGames ? (
-                        filteredGames.map((game) => (
-                          <div
-                            key={game.fixture_id}
-                            className="p-3 bg-black/30 border border-white/20 rounded-lg w-full"
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <LazyImage
-                                  src={game.league_logo}
-                                  alt={game.league_name}
-                                  className="w-5 h-5"
-                                />
-                                <span className="text-xs text-white/70">
-                                  {game.league_name}
-                                </span>
-                              </div>
-                              <div className="text-xs text-white/50">
-                                {new Date(game.date).toLocaleDateString()}
-                              </div>
+                        <div className="max-h-[450px] overflow-y-auto pr-2">
+                          {filteredGames.length > 0 && (
+                            <div className="bg-[#02a875]/20 rounded-lg p-2 mb-3 text-center">
+                              <span className="text-[#02a875] font-semibold">
+                                Total Odd:{" "}
+                                {filteredGames
+                                  .reduce(
+                                    (acc: number, game: GameType) =>
+                                      acc * (game.ticket_info?.odd || 1),
+                                    1
+                                  )
+                                  .toFixed(2)}
+                              </span>
                             </div>
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-1 text-xs">
-                                <LazyImage
-                                  src={game.home_team_logo}
-                                  alt={game.home_team}
-                                  className="w-4 h-4"
-                                />
-                                <span className="text-white truncate max-w-[80px]">
-                                  {game.home_team}
-                                </span>
-                              </div>
-                              <span className="text-white/50 text-xs">vs</span>
-                              <div className="flex items-center gap-1 text-xs">
-                                <span className="text-white truncate max-w-[80px]">
-                                  {game.away_team}
-                                </span>
-                                <LazyImage
-                                  src={game.away_team_logo}
-                                  alt={game.away_team}
-                                  className="w-4 h-4"
-                                />
-                              </div>
-                            </div>
-                            {game.ticket_info && (
-                              <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
-                                <span className="text-xs text-white/70">
-                                  {game.ticket_info.label}
-                                </span>
-                                <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
-                                  {game.ticket_info.odd.toFixed(2)}
+                          )}
+                          {filteredGames.map((game) => (
+                            <div
+                              key={game.fixture_id}
+                              className="p-3 bg-black/30 border border-white/20 rounded-lg w-full mb-3"
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <LazyImage
+                                    src={game.league_logo}
+                                    alt={game.league_name}
+                                    className="w-5 h-5"
+                                  />
+                                  <span className="text-xs text-white/70">
+                                    {game.league_name}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-white/50">
+                                  {new Date(game.date).toLocaleDateString()}
                                 </div>
                               </div>
-                            )}
-                          </div>
-                        ))
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1 text-xs">
+                                  <LazyImage
+                                    src={game.home_team_logo}
+                                    alt={game.home_team}
+                                    className="w-4 h-4"
+                                  />
+                                  <div className="w-4"></div>
+                                  <div className="flex items-center gap-1 text-xs">
+                                    <span className="text-white truncate max-w-[80px]">
+                                      {game.home_team}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="w-4"></div>
+                                <div className="flex items-center gap-1 text-xs">
+                                  <span className="text-white truncate max-w-[80px]">
+                                    {game.away_team}
+                                  </span>
+                                  <LazyImage
+                                    src={game.away_team_logo}
+                                    alt={game.away_team}
+                                    className="w-4 h-4"
+                                  />
+                                </div>
+                              </div>
+                              {game.ticket_info && (
+                                <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
+                                  <span className="text-xs text-white/70">
+                                    {game.ticket_info.label}
+                                  </span>
+                                  <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
+                                    {game.ticket_info.odd.toFixed(2)}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       ) : (
                         <div className="flex justify-center items-center h-full">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>

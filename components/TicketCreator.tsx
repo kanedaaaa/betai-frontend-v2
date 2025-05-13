@@ -100,29 +100,33 @@ export default function TicketCreator({
 
           {ticketGames.length > 0 && (
             <div className="mt-4 space-y-4">
-              <div className="text-center text-lg font-semibold text-white">
-                Total Odd:{" "}
-                {ticketGames
-                  .reduce((acc, game) => acc * game.odd, 1)
-                  .toFixed(2)}
+              <div className="bg-[#02a875]/20 rounded-lg p-2 text-center">
+                <span className="text-[#02a875] font-semibold">
+                  Total Odd:{" "}
+                  {ticketGames
+                    .reduce((acc, game) => acc * game.odd, 1)
+                    .toFixed(2)}
+                </span>
               </div>
-              {ticketGames.map((game) => (
-                <div
-                  key={game.fixture_id}
-                  className="border border-[#4D4F5C] rounded-lg p-2"
-                >
-                  {fixtures[game.fixture_id] && (
-                    <Game
-                      leagueId={fixtures[game.fixture_id].league}
-                      selectedGame={null}
-                      onGameSelect={() => {}}
-                    />
-                  )}
-                  <div className="mt-2 text-center text-white">
-                    {game.label} @ {game.odd.toFixed(2)}
+              <div className="max-h-[300px] overflow-y-auto pr-2">
+                {ticketGames.map((game) => (
+                  <div
+                    key={game.fixture_id}
+                    className="border border-[#4D4F5C] rounded-lg p-2 mb-3"
+                  >
+                    {fixtures[game.fixture_id] && (
+                      <Game
+                        leagueId={fixtures[game.fixture_id].league}
+                        selectedGame={null}
+                        onGameSelect={() => {}}
+                      />
+                    )}
+                    <div className="mt-2 text-center text-white">
+                      {game.label} @ {game.odd.toFixed(2)}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
