@@ -66,7 +66,12 @@ export default function Home() {
         const fixtureData: Fixture = await fixtureResponse.json();
 
         return {
-          ...fixtureData,
+          fixture_id: game.fixture_id,
+          home_team: fixtureData.home_team,
+          home_team_logo: fixtureData.home_team_logo,
+          away_team: fixtureData.away_team,
+          away_team_logo: fixtureData.away_team_logo,
+          date: fixtureData.date,
           league_name: String(fixtureData.league),
           league_logo: fixtureData.league_logo,
           odds: {
@@ -74,6 +79,11 @@ export default function Home() {
               label: game.label,
               value: game.odd,
             },
+          },
+          ticket_info: {
+            field: game.field,
+            label: game.label,
+            odd: game.odd,
           },
         } as GameType;
       });
@@ -96,6 +106,7 @@ export default function Home() {
     } else {
       setIsFilterActive(false);
       setSelectedDate(new Date());
+      setIsFilterOpen(false);
     }
   };
 
@@ -123,6 +134,12 @@ export default function Home() {
     setSelectedDate(new Date());
   };
 
+  const handleClearTicket = () => {
+    setTicketGames([]);
+    setIsTicketActive(false);
+    setSelectedDate(new Date());
+  };
+
   return (
     <div>
       {/* Mobile Layout */}
@@ -135,12 +152,20 @@ export default function Home() {
             className={`text-white p-2 rounded ${
               isTicketActive ? "bg-red-500" : "bg-[#02a875]"
             }`}
-            onClick={() => setIsTicketOpen(true)}
+            onClick={() =>
+              isTicketActive ? handleClearTicket() : setIsTicketOpen(true)
+            }
           >
-            <Ticket className="w-5 h-5" />
+            {isTicketActive ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Ticket className="w-5 h-5" />
+            )}
           </button>
           <button
-            className="bg-[#02a875] text-white p-2 rounded"
+            className={`text-white p-2 rounded ${
+              isFilterActive ? "bg-red-500" : "bg-[#02a875]"
+            }`}
             onClick={() => setIsFilterOpen(true)}
           >
             <FilterIcon className="w-5 h-5" />
@@ -213,28 +238,31 @@ export default function Home() {
             <div className="absolute -top-[0px] left-0 w-full">
               <SportSelector />
             </div>
-            {isTicketActive ? (
-              <Game
-                leagueId={undefined}
-                selectedGame={selectedGame}
-                onGameSelect={setSelectedGame}
-                games={ticketGames}
-              />
-            ) : (
-              <Game
-                leagueId={selectedLeague?.leagueID}
-                selectedGame={selectedGame}
-                onGameSelect={setSelectedGame}
-                selectedDate={selectedDate}
-                onDateSelect={setSelectedDate}
-              />
-            )}
+            {/* Always show the default game list in desktop view, regardless of ticket status */}
+            <Game
+              leagueId={selectedLeague?.leagueID}
+              selectedGame={selectedGame}
+              onGameSelect={setSelectedGame}
+              selectedDate={selectedDate}
+              onDateSelect={setSelectedDate}
+            />
           </div>
 
           <UtilityWindow
             game={selectedGame}
-            onClose={() => setSelectedGame(null)}
+            onClose={() => {
+              // If a game is selected, clear it for analysis view
+              if (selectedGame) {
+                setSelectedGame(null);
+              }
+              // If no game but tickets are active, clear the tickets
+              else if (isTicketActive) {
+                handleClearTicket();
+              }
+            }}
             onCreateTicket={handleCreateTicket}
+            ticketGames={ticketGames}
+            isTicketActive={isTicketActive}
           />
         </div>
       </div>

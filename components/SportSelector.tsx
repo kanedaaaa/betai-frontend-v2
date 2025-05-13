@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 
 const SportSelector = () => {
   const sports = [
@@ -32,19 +31,21 @@ const SportSelector = () => {
 
   // Mobile version
   const MobileVersion = () => (
-    <div className="flex gap-4 xl:hidden">
+    <div className="flex gap-4 xl:hidden overflow-x-auto scrollbar-hide">
       {sports.map((sport) => (
         <div
           key={sport.id}
           className="flex flex-col items-center cursor-pointer first:ml-[4px]"
           onClick={() => setSelectedSport(sport.id)}
         >
-          <Image
-            src={`/SportsSelectorIcons/${sport.id}.png`}
-            alt={sport.id}
-            width={57}
-            height={52}
-          />
+          <div className="relative w-[57px] h-[52px]">
+            <Image
+              src={`/SportsSelectorIcons/${sport.id}.png`}
+              alt={sport.id}
+              width={57}
+              height={52}
+            />
+          </div>
           <span
             className={`mt-1 text-xs px-2 py-0.5 rounded-full ${
               selectedSport === sport.id
@@ -65,18 +66,12 @@ const SportSelector = () => {
       ref={containerRef}
       className="absolute -top-[70px] left-0 w-full h-[50px] bg-black/30 backdrop-blur-xl rounded-[100px] border border-white/50 flex justify-between items-center p-2 hidden xl:flex"
     >
-      <motion.div
-        initial={false}
-        animate={{
+      <div
+        style={{
           width: indicatorProps.width,
-          x: indicatorProps.x,
+          transform: `translateX(${indicatorProps.x}px)`,
         }}
-        transition={{
-          type: "spring",
-          stiffness: 400,
-          damping: 30,
-        }}
-        className="absolute bg-[#02A875] rounded-[100px] h-8 z-0"
+        className="absolute bg-[#02A875] rounded-[100px] h-8 z-0 transition-all duration-200"
       />
 
       {sports.map((sport) => (

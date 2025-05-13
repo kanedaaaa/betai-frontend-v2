@@ -1,6 +1,7 @@
 import { X, BarChart2, Ticket, Filter } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Game as GameType, Analysis as AnalysisType } from "@/types";
+import { LazyImage } from "@/components/LazyImage";
 
 type UtilityMode = "analysis" | "ticket" | "filterizer";
 
@@ -8,6 +9,8 @@ interface UtilityWindowProps {
   game: GameType | null;
   onClose: () => void;
   onCreateTicket: (minOdd: string, maxOdd: string) => Promise<void>;
+  ticketGames?: GameType[];
+  isTicketActive?: boolean;
 }
 
 const StatBar = ({
@@ -94,6 +97,8 @@ export default function UtilityWindow({
   game,
   onClose,
   onCreateTicket,
+  ticketGames = [],
+  isTicketActive = false,
 }: UtilityWindowProps) {
   const [mode, setMode] = useState<UtilityMode>("analysis");
   const [analysis, setAnalysis] = useState<AnalysisType | null>(null);
@@ -102,10 +107,42 @@ export default function UtilityWindow({
   const [minOdd, setMinOdd] = useState<string>("");
   const [maxOdd, setMaxOdd] = useState<string>("");
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
+  const [showTickets, setShowTickets] = useState(false);
+
+  // RULE: Content active? EXTEND. Content idle? DEFAULT HEIGHT.
+  useEffect(() => {
+    // Check if there is active content based on mode
+    if (mode === "analysis" && analysis) {
+      // Analysis mode with data - extend
+      setIsExpanded(true);
+    } else if (mode === "ticket" && isTicketActive && ticketGames.length > 0) {
+      // Ticket mode with active tickets - extend
+      setIsExpanded(true);
+      // Add a slight delay before showing tickets to allow for expansion animation
+      setTimeout(() => {
+        setShowTickets(true);
+      }, 300);
+    } else if (mode === "analysis" && game) {
+      // Selected game but loading analysis - extend
+      setIsExpanded(true);
+    } else {
+      // Default state - collapse
+      setIsExpanded(false);
+      setShowTickets(false);
+    }
+  }, [mode, analysis, isTicketActive, ticketGames, game]);
+
+  // Set initial mode to ticket if we have active tickets
+  useEffect(() => {
+    if (isTicketActive && ticketGames.length > 0) {
+      setMode("ticket");
+    }
+  }, [isTicketActive, ticketGames]);
 
   const handleCreateTicket = async () => {
     if (!minOdd || !maxOdd) return;
     setIsCreatingTicket(true);
+    setShowTickets(false);
     try {
       await onCreateTicket(minOdd, maxOdd);
     } catch (error) {
@@ -148,7 +185,6 @@ export default function UtilityWindow({
   const handleModeChange = (newMode: UtilityMode) => {
     setMode(newMode);
     if (newMode === "analysis" && game) {
-      setIsExpanded(true);
       setIsLoading(true);
       const fetchAnalysis = async () => {
         try {
@@ -164,8 +200,6 @@ export default function UtilityWindow({
         }
       };
       fetchAnalysis();
-    } else if (newMode === "ticket") {
-      setIsExpanded(false);
     }
   };
 
@@ -262,7 +296,9 @@ export default function UtilityWindow({
             <div className="p-4 flex flex-row justify-between items-center border-b border-white/10">
               <div className="flex gap-2">
                 <button
-                  onClick={() => handleModeChange("analysis")}
+                  onClick={() => {
+                    setMode("analysis");
+                  }}
                   className={`p-2 rounded-full transition-colors ${
                     mode === "analysis"
                       ? "bg-[#02a875]"
@@ -272,7 +308,9 @@ export default function UtilityWindow({
                   <BarChart2 className="w-5 h-5 text-white" />
                 </button>
                 <button
-                  onClick={() => handleModeChange("ticket")}
+                  onClick={() => {
+                    setMode("ticket");
+                  }}
                   className={`p-2 rounded-full transition-colors ${
                     mode === "ticket"
                       ? "bg-[#02a875]"
@@ -296,14 +334,12 @@ export default function UtilityWindow({
                 <div className="flex justify-center items-center py-[1px] px-2 bg-[rgba(2,168,117,0.25)] rounded-[5px]">
                   <span className="text-[13px] text-[#02A976]">BetAI 0.1</span>
                 </div>
-                {mode !== "ticket" && (
-                  <button
-                    onClick={onClose}
-                    className="p-1 hover:bg-white/10 rounded-full transition-colors"
-                  >
-                    <X className="w-4 h-4 text-white/70" />
-                  </button>
-                )}
+                <button
+                  onClick={onClose}
+                  className="p-1 hover:bg-white/10 rounded-full transition-colors"
+                >
+                  <X className="w-4 h-4 text-white/70" />
+                </button>
               </div>
             </div>
             {isLoading ? (
@@ -333,34 +369,103 @@ export default function UtilityWindow({
                 />
               </div>
             ) : mode === "ticket" ? (
-              <div className="flex justify-center items-center flex-1 mt-4">
-                <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-[300px] h-[100px] flex justify-center items-center p-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-white/50 text-sm">FROM</span>
-                    <input
-                      type="number"
-                      value={minOdd}
-                      onChange={(e) => setMinOdd(e.target.value)}
-                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="5"
-                    />
-                    <span className="text-white/50 text-sm">TO</span>
-                    <input
-                      type="number"
-                      value={maxOdd}
-                      onChange={(e) => setMaxOdd(e.target.value)}
-                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="10"
-                    />
-                    <button
-                      onClick={handleCreateTicket}
-                      disabled={isCreatingTicket}
-                      className="bg-[#02a875] text-white px-4 py-1 rounded text-sm hover:bg-[#029a6a] transition-colors disabled:opacity-50 ml-2"
-                    >
-                      {isCreatingTicket ? "Creating" : "CREATE"}
-                    </button>
+              <div className="p-4 h-full overflow-y-auto pb-6">
+                {isTicketActive && ticketGames.length > 0 ? (
+                  isCreatingTicket || !showTickets ? (
+                    <div className="flex justify-center items-center h-full">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <h3 className="text-white font-semibold">Your Ticket</h3>
+                      {ticketGames.map((game) => (
+                        <div
+                          key={game.fixture_id}
+                          className="p-3 bg-black/30 border border-white/20 rounded-lg"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <LazyImage
+                                src={game.league_logo}
+                                alt={game.league_name}
+                                className="w-5 h-5"
+                              />
+                              <span className="text-xs text-white/70">
+                                {game.league_name}
+                              </span>
+                            </div>
+                            <div className="text-xs text-white/50">
+                              {new Date(game.date).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1 text-xs">
+                              <LazyImage
+                                src={game.home_team_logo}
+                                alt={game.home_team}
+                                className="w-4 h-4"
+                              />
+                              <span className="text-white truncate max-w-[80px]">
+                                {game.home_team}
+                              </span>
+                            </div>
+                            <span className="text-white/50 text-xs">vs</span>
+                            <div className="flex items-center gap-1 text-xs">
+                              <span className="text-white truncate max-w-[80px]">
+                                {game.away_team}
+                              </span>
+                              <LazyImage
+                                src={game.away_team_logo}
+                                alt={game.away_team}
+                                className="w-4 h-4"
+                              />
+                            </div>
+                          </div>
+                          {game.ticket_info && (
+                            <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
+                              <span className="text-xs text-white/70">
+                                {game.ticket_info.label}
+                              </span>
+                              <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
+                                {game.ticket_info.odd.toFixed(2)}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )
+                ) : (
+                  <div className="flex justify-center items-center h-[80%] w-full">
+                    <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-[300px] h-[100px] flex justify-center items-center p-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-white/50 text-sm">FROM</span>
+                        <input
+                          type="number"
+                          value={minOdd}
+                          onChange={(e) => setMinOdd(e.target.value)}
+                          className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          placeholder="5"
+                        />
+                        <span className="text-white/50 text-sm">TO</span>
+                        <input
+                          type="number"
+                          value={maxOdd}
+                          onChange={(e) => setMaxOdd(e.target.value)}
+                          className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          placeholder="10"
+                        />
+                        <button
+                          onClick={handleCreateTicket}
+                          disabled={isCreatingTicket}
+                          className="bg-[#02a875] text-white px-4 py-1 rounded text-sm hover:bg-[#029a6a] transition-colors disabled:opacity-50 ml-2"
+                        >
+                          {isCreatingTicket ? "Creating" : "CREATE"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ) : mode === "filterizer" ? (
               <div className="p-4">
@@ -379,28 +484,6 @@ export default function UtilityWindow({
                 <button
                   onClick={() => {
                     setMode("analysis");
-                    if (game) {
-                      setIsExpanded(true);
-                      setTimeout(() => {
-                        setIsLoading(true);
-                        const fetchAnalysis = async () => {
-                          try {
-                            const response = await fetch(
-                              // CURSOR DO NOT REMOVE THIS LINE
-                              // @ts-ignore
-                              `https://backend.betaisports.net/analyze/${game.fixture_id}`
-                            );
-                            const data = await response.json();
-                            setAnalysis(data);
-                          } catch (error) {
-                            console.error("Error fetching analysis:", error);
-                          } finally {
-                            setIsLoading(false);
-                          }
-                        };
-                        fetchAnalysis();
-                      }, 500);
-                    }
                   }}
                   className={`p-2 rounded-full transition-colors ${
                     mode === "analysis"
@@ -413,7 +496,6 @@ export default function UtilityWindow({
                 <button
                   onClick={() => {
                     setMode("ticket");
-                    setIsExpanded(false);
                   }}
                   className={`p-2 rounded-full transition-colors ${
                     mode === "ticket"
@@ -434,41 +516,122 @@ export default function UtilityWindow({
                   <Filter className="w-5 h-5 text-white" />
                 </button>
               </div>
-              <div className="flex justify-center items-center py-[1px] px-2 bg-[rgba(2,168,117,0.25)] rounded-[5px]">
-                <span className="text-[13px] text-[#02A976]">BetAI 0.1</span>
+              <div className="flex items-center gap-2">
+                <div className="flex justify-center items-center py-[1px] px-2 bg-[rgba(2,168,117,0.25)] rounded-[5px]">
+                  <span className="text-[13px] text-[#02A976]">BetAI 0.1</span>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="p-1 hover:bg-white/10 rounded-full transition-colors"
+                >
+                  <X className="w-4 h-4 text-white/70" />
+                </button>
               </div>
             </div>
             <div className="flex justify-center items-center flex-1">
               {mode === "ticket" ? (
-                <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-[300px] h-[100px] flex justify-center items-center p-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-white/50 text-sm">FROM</span>
-                    <input
-                      type="number"
-                      value={minOdd}
-                      onChange={(e) => setMinOdd(e.target.value)}
-                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="5"
-                    />
-                    <span className="text-white/50 text-sm">TO</span>
-                    <input
-                      type="number"
-                      value={maxOdd}
-                      onChange={(e) => setMaxOdd(e.target.value)}
-                      className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="10"
-                    />
-                    <button
-                      onClick={handleCreateTicket}
-                      disabled={isCreatingTicket}
-                      className="bg-[#02a875] text-white px-4 py-1 rounded text-sm hover:bg-[#029a6a] transition-colors disabled:opacity-50 ml-2"
-                    >
-                      {isCreatingTicket ? "Creating" : "CREATE"}
-                    </button>
+                isTicketActive && ticketGames.length > 0 ? (
+                  isCreatingTicket || !showTickets ? (
+                    <div className="flex justify-center items-center h-full">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                    </div>
+                  ) : (
+                    <div className="p-4 h-full w-full overflow-y-auto pb-6">
+                      <div className="space-y-4">
+                        <h3 className="text-white font-semibold">
+                          Your Ticket
+                        </h3>
+                        {ticketGames.map((game) => (
+                          <div
+                            key={game.fixture_id}
+                            className="p-3 bg-black/30 border border-white/20 rounded-lg"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <LazyImage
+                                  src={game.league_logo}
+                                  alt={game.league_name}
+                                  className="w-5 h-5"
+                                />
+                                <span className="text-xs text-white/70">
+                                  {game.league_name}
+                                </span>
+                              </div>
+                              <div className="text-xs text-white/50">
+                                {new Date(game.date).toLocaleDateString()}
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1 text-xs">
+                                <LazyImage
+                                  src={game.home_team_logo}
+                                  alt={game.home_team}
+                                  className="w-4 h-4"
+                                />
+                                <span className="text-white truncate max-w-[80px]">
+                                  {game.home_team}
+                                </span>
+                              </div>
+                              <span className="text-white/50 text-xs">vs</span>
+                              <div className="flex items-center gap-1 text-xs">
+                                <span className="text-white truncate max-w-[80px]">
+                                  {game.away_team}
+                                </span>
+                                <LazyImage
+                                  src={game.away_team_logo}
+                                  alt={game.away_team}
+                                  className="w-4 h-4"
+                                />
+                              </div>
+                            </div>
+                            {game.ticket_info && (
+                              <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
+                                <span className="text-xs text-white/70">
+                                  {game.ticket_info.label}
+                                </span>
+                                <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
+                                  {game.ticket_info.odd.toFixed(2)}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                ) : (
+                  <div className="flex justify-center items-center h-[80%] w-full">
+                    <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-[300px] h-[100px] flex justify-center items-center p-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-white/50 text-sm">FROM</span>
+                        <input
+                          type="number"
+                          value={minOdd}
+                          onChange={(e) => setMinOdd(e.target.value)}
+                          className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          placeholder="5"
+                        />
+                        <span className="text-white/50 text-sm">TO</span>
+                        <input
+                          type="number"
+                          value={maxOdd}
+                          onChange={(e) => setMaxOdd(e.target.value)}
+                          className="w-12 bg-[#1A1A1A] border border-[#4D4F5C] rounded px-2 py-1 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          placeholder="10"
+                        />
+                        <button
+                          onClick={handleCreateTicket}
+                          disabled={isCreatingTicket}
+                          className="bg-[#02a875] text-white px-4 py-1 rounded text-sm hover:bg-[#029a6a] transition-colors disabled:opacity-50 ml-2"
+                        >
+                          {isCreatingTicket ? "Creating" : "CREATE"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )
               ) : (
-                <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-[300px] h-[100px] flex justify-center items-center p-4">
+                <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[8px] w-[300px] h-[100px] flex justify-center items-center p-4">
                   <span className="flex justify-center items-center py-2 px-4 bg-gradient-to-r from-[#03E9A2] to-[#02835B] rounded-[8px] font-extrabold text-[14px] text-white">
                     Choose a game to analyse
                   </span>

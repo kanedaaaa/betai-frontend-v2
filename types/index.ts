@@ -24,6 +24,12 @@ export interface Game {
   date: string;
   league_name: string;
   league_logo: string;
+  odds?: Record<string, { label: string; value: number }>;
+  ticket_info?: {
+    field: string;
+    label: string;
+    odd: number;
+  };
 }
 
 export interface TeamStats {

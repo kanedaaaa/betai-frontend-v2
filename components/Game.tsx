@@ -217,20 +217,41 @@ const Game = ({
                 />
               </div>
             </div>
-            {selectedGame?.fixture_id === game.fixture_id ? (
+
+            {/* Show ticket information if available */}
+            {game.ticket_info && (
+              <div className="mt-4 pt-4 border-t border-[#4D4F5C]">
+                <div className="flex justify-between items-center">
+                  <div className="text-sm text-white">
+                    <span className="text-white/70">Selection: </span>
+                    <span className="font-semibold">
+                      {game.ticket_info.label}
+                    </span>
+                  </div>
+                  <div className="bg-[#02a875] text-white px-3 py-1 rounded font-semibold">
+                    {game.ticket_info.odd.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {selectedGame?.fixture_id === game.fixture_id &&
+            !game.ticket_info ? (
               <div className="block xl:hidden mt-4 pt-4 border-t border-[#4D4F5C]">
                 {/* @ts-ignore */}
                 <UtilityWindow game={game} onClose={() => onGameSelect(null)} />
               </div>
             ) : (
-              <div className="flex justify-center mt-4 pt-4 border-t border-[#4D4F5C]">
-                <button
-                  onClick={() => onGameSelect(game)}
-                  className="w-32 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
-                >
-                  Analyse
-                </button>
-              </div>
+              !game.ticket_info && (
+                <div className="flex justify-center mt-4 pt-4 border-t border-[#4D4F5C]">
+                  <button
+                    onClick={() => onGameSelect(game)}
+                    className="w-32 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
+                  >
+                    Analyse
+                  </button>
+                </div>
+              )
             )}
           </div>
         ))}
