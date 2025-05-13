@@ -174,9 +174,17 @@ export default function Home() {
             className={`text-white p-2 rounded ${
               isFilterizerActive ? "bg-red-500" : "bg-[#02a875]"
             }`}
-            onClick={() => setIsOddFilterizerOpen(true)}
+            onClick={() =>
+              isFilterizerActive
+                ? handleClearFilterizer()
+                : setIsOddFilterizerOpen(true)
+            }
           >
-            <ListFilterPlus className="w-5 h-5" />
+            {isFilterizerActive ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <ListFilterPlus className="w-5 h-5" />
+            )}
           </button>
         </div>
         <div>
@@ -189,14 +197,6 @@ export default function Home() {
             />
           ) : isFilterizerActive ? (
             <div>
-              <div className="flex justify-end px-4 py-2">
-                <button
-                  onClick={handleClearFilterizer}
-                  className="text-white/50 text-sm hover:text-white transition-colors"
-                >
-                  Clear
-                </button>
-              </div>
               {filteredGames.length > 0 ? (
                 <Game
                   leagueId={undefined}

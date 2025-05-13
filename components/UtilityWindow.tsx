@@ -2,6 +2,7 @@ import { X, BarChart2, Ticket, Filter } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Game as GameType, Analysis as AnalysisType } from "@/types";
 import { LazyImage } from "@/components/LazyImage";
+import { OddFilterizerDesktop } from "@/components/OddFilterizer";
 
 type UtilityMode = "analysis" | "ticket" | "filterizer";
 
@@ -11,6 +12,7 @@ interface UtilityWindowProps {
   onCreateTicket: (minOdd: string, maxOdd: string) => Promise<void>;
   ticketGames?: GameType[];
   isTicketActive?: boolean;
+  onFilterOdds?: (games: GameType[]) => void;
 }
 
 const StatBar = ({
@@ -99,6 +101,7 @@ export default function UtilityWindow({
   onCreateTicket,
   ticketGames = [],
   isTicketActive = false,
+  onFilterOdds,
 }: UtilityWindowProps) {
   const [mode, setMode] = useState<UtilityMode>("analysis");
   const [analysis, setAnalysis] = useState<AnalysisType | null>(null);
@@ -108,6 +111,8 @@ export default function UtilityWindow({
   const [maxOdd, setMaxOdd] = useState<string>("");
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
   const [showTickets, setShowTickets] = useState(false);
+  const [filteredGames, setFilteredGames] = useState<GameType[]>([]);
+  const [showFilteredGames, setShowFilteredGames] = useState(false);
 
   // RULE: Content active? EXTEND. Content idle? DEFAULT HEIGHT.
   useEffect(() => {
@@ -125,12 +130,20 @@ export default function UtilityWindow({
     } else if (mode === "analysis" && game) {
       // Selected game but loading analysis - extend
       setIsExpanded(true);
+    } else if (mode === "filterizer" && filteredGames.length > 0) {
+      // Filterizer mode with filtered games - extend
+      setIsExpanded(true);
+      // Add a slight delay before showing filtered games to allow for expansion animation
+      setTimeout(() => {
+        setShowFilteredGames(true);
+      }, 300);
     } else {
       // Default state - collapse
       setIsExpanded(false);
       setShowTickets(false);
+      setShowFilteredGames(false);
     }
-  }, [mode, analysis, isTicketActive, ticketGames, game]);
+  }, [mode, analysis, isTicketActive, ticketGames, game, filteredGames]);
 
   // Set initial mode to ticket if we have active tickets
   useEffect(() => {
@@ -203,22 +216,102 @@ export default function UtilityWindow({
     }
   };
 
+  const handleFilterOdds = (games: GameType[]) => {
+    console.log(
+      `UtilityWindow.handleFilterOdds received ${games.length} games:`,
+      games
+    );
+    setShowFilteredGames(false); // Hide filtered games during loading/transition
+    setFilteredGames(games);
+    console.log(
+      "After setFilteredGames - current filteredGames state:",
+      filteredGames
+    );
+    if (onFilterOdds) {
+      console.log("Calling parent onFilterOdds callback");
+      onFilterOdds(games);
+    }
+  };
+
+  // Monitor filteredGames state changes
+  useEffect(() => {
+    console.log("filteredGames state changed:", filteredGames);
+    console.log("Current mode:", mode);
+    console.log("isExpanded:", isExpanded);
+    console.log("showFilteredGames:", showFilteredGames);
+  }, [filteredGames, mode, isExpanded, showFilteredGames]);
+
+  // Handle window close, clear filtered games if in filterizer mode
+  const handleClose = () => {
+    // Clear filtered games if in filterizer mode
+    if (mode === "filterizer") {
+      setFilteredGames([]);
+      setShowFilteredGames(false);
+    }
+    onClose();
+  };
+
   return (
     <>
       <div className="xl:hidden animate-expand-down overflow-hidden">
         {game && (
           <>
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={onClose}
-                className="p-1 hover:bg-white/10 rounded-full transition-colors"
-              >
-                <X className="w-4 h-4 text-white/70" />
-              </button>
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setMode("analysis");
+                  }}
+                  className={`p-2 rounded-full transition-colors ${
+                    mode === "analysis"
+                      ? "bg-[#02a875]"
+                      : "bg-[#1A1A1A] hover:bg-[#2A2A2A]"
+                  }`}
+                >
+                  <BarChart2 className="w-4 h-4 text-white" />
+                </button>
+                <button
+                  onClick={() => {
+                    setMode("ticket");
+                  }}
+                  className={`p-2 rounded-full transition-colors ${
+                    mode === "ticket"
+                      ? "bg-[#02a875]"
+                      : "bg-[#1A1A1A] hover:bg-[#2A2A2A]"
+                  }`}
+                >
+                  <Ticket className="w-4 h-4 text-white" />
+                </button>
+                <button
+                  onClick={() => setMode("filterizer")}
+                  className={`p-2 rounded-full transition-colors ${
+                    mode === "filterizer"
+                      ? "bg-[#02a875]"
+                      : "bg-[#1A1A1A] hover:bg-[#2A2A2A]"
+                  }`}
+                >
+                  <Filter className="w-4 h-4 text-white" />
+                </button>
+              </div>
+
+              {((mode === "filterizer" &&
+                filteredGames.length > 0 &&
+                showFilteredGames) ||
+                (mode === "ticket" &&
+                  isTicketActive &&
+                  ticketGames.length > 0 &&
+                  showTickets)) && (
+                <button
+                  onClick={handleClose}
+                  className="p-1 hover:bg-white/10 rounded-full transition-colors"
+                >
+                  <X className="w-4 h-4 text-white/70" />
+                </button>
+              )}
             </div>
             <div className="max-h-[400px] overflow-y-auto pr-2 space-y-6">
               {isLoading ? (
-                <div className="flex justify-center items-center h-32">
+                <div className="flex justify-center items-center h-full">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
                 </div>
               ) : analysis ? (
@@ -277,6 +370,71 @@ export default function UtilityWindow({
                     </button>
                   </div>
                 </div>
+              ) : mode === "filterizer" && filteredGames.length > 0 ? (
+                <div className="space-y-4 w-full">
+                  <h3 className="text-white font-semibold">Filtered Games</h3>
+                  {showFilteredGames ? (
+                    filteredGames.map((game) => (
+                      <div
+                        key={game.fixture_id}
+                        className="p-3 bg-black/30 border border-white/20 rounded-lg w-full"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <LazyImage
+                              src={game.league_logo}
+                              alt={game.league_name}
+                              className="w-5 h-5"
+                            />
+                            <span className="text-xs text-white/70">
+                              {game.league_name}
+                            </span>
+                          </div>
+                          <div className="text-xs text-white/50">
+                            {new Date(game.date).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1 text-xs">
+                            <LazyImage
+                              src={game.home_team_logo}
+                              alt={game.home_team}
+                              className="w-4 h-4"
+                            />
+                            <span className="text-white truncate max-w-[80px]">
+                              {game.home_team}
+                            </span>
+                          </div>
+                          <span className="text-white/50 text-xs">vs</span>
+                          <div className="flex items-center gap-1 text-xs">
+                            <span className="text-white truncate max-w-[80px]">
+                              {game.away_team}
+                            </span>
+                            <LazyImage
+                              src={game.away_team_logo}
+                              alt={game.away_team}
+                              className="w-4 h-4"
+                            />
+                          </div>
+                        </div>
+                        {game.ticket_info && (
+                          <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
+                            <span className="text-xs text-white/70">
+                              {game.ticket_info.label}
+                            </span>
+                            <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
+                              {game.ticket_info.odd.toFixed(2)}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex justify-center items-center h-full">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="text-center text-white/50">
                   Failed to load analysis
@@ -334,12 +492,14 @@ export default function UtilityWindow({
                 <div className="flex justify-center items-center py-[1px] px-2 bg-[rgba(2,168,117,0.25)] rounded-[5px]">
                   <span className="text-[13px] text-[#02A976]">BetAI 0.1</span>
                 </div>
-                <button
-                  onClick={onClose}
-                  className="p-1 hover:bg-white/10 rounded-full transition-colors"
-                >
-                  <X className="w-4 h-4 text-white/70" />
-                </button>
+                {isExpanded && (
+                  <button
+                    onClick={handleClose}
+                    className="p-1 hover:bg-white/10 rounded-full transition-colors"
+                  >
+                    <X className="w-4 h-4 text-white/70" />
+                  </button>
+                )}
               </div>
             </div>
             {isLoading ? (
@@ -436,9 +596,9 @@ export default function UtilityWindow({
                     </div>
                   )
                 ) : (
-                  <div className="flex justify-center items-center h-[80%] w-full">
-                    <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-[300px] h-[100px] flex justify-center items-center p-4">
-                      <div className="flex items-center gap-2">
+                  <div className="flex justify-center items-center h-[80%] w-full px-4">
+                    <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-full h-[100px] flex justify-center items-center p-4">
+                      <div className="flex items-center justify-center gap-2 w-full">
                         <span className="text-white/50 text-sm">FROM</span>
                         <input
                           type="number"
@@ -468,9 +628,76 @@ export default function UtilityWindow({
                 )}
               </div>
             ) : mode === "filterizer" ? (
-              <div className="p-4">
-                <div className="text-gray-300">Coming soon...</div>
-              </div>
+              filteredGames.length > 0 ? (
+                <div className="p-4 h-full overflow-y-auto pb-6 w-full">
+                  <div className="space-y-4 w-full">
+                    <h3 className="text-white font-semibold">Filtered Games</h3>
+                    {showFilteredGames ? (
+                      filteredGames.map((game) => (
+                        <div
+                          key={game.fixture_id}
+                          className="p-3 bg-black/30 border border-white/20 rounded-lg w-full"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <LazyImage
+                                src={game.league_logo}
+                                alt={game.league_name}
+                                className="w-5 h-5"
+                              />
+                              <span className="text-xs text-white/70">
+                                {game.league_name}
+                              </span>
+                            </div>
+                            <div className="text-xs text-white/50">
+                              {new Date(game.date).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1 text-xs">
+                              <LazyImage
+                                src={game.home_team_logo}
+                                alt={game.home_team}
+                                className="w-4 h-4"
+                              />
+                              <span className="text-white truncate max-w-[80px]">
+                                {game.home_team}
+                              </span>
+                            </div>
+                            <span className="text-white/50 text-xs">vs</span>
+                            <div className="flex items-center gap-1 text-xs">
+                              <span className="text-white truncate max-w-[80px]">
+                                {game.away_team}
+                              </span>
+                              <LazyImage
+                                src={game.away_team_logo}
+                                alt={game.away_team}
+                                className="w-4 h-4"
+                              />
+                            </div>
+                          </div>
+                          {game.ticket_info && (
+                            <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
+                              <span className="text-xs text-white/70">
+                                {game.ticket_info.label}
+                              </span>
+                              <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
+                                {game.ticket_info.odd.toFixed(2)}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex justify-center items-center h-full">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <OddFilterizerDesktop onFilterGames={handleFilterOdds} />
+              )
             ) : (
               <div className="flex justify-center items-center h-full text-white/50">
                 Failed to load analysis
@@ -520,12 +747,14 @@ export default function UtilityWindow({
                 <div className="flex justify-center items-center py-[1px] px-2 bg-[rgba(2,168,117,0.25)] rounded-[5px]">
                   <span className="text-[13px] text-[#02A976]">BetAI 0.1</span>
                 </div>
-                <button
-                  onClick={onClose}
-                  className="p-1 hover:bg-white/10 rounded-full transition-colors"
-                >
-                  <X className="w-4 h-4 text-white/70" />
-                </button>
+                {isExpanded && (
+                  <button
+                    onClick={handleClose}
+                    className="p-1 hover:bg-white/10 rounded-full transition-colors"
+                  >
+                    <X className="w-4 h-4 text-white/70" />
+                  </button>
+                )}
               </div>
             </div>
             <div className="flex justify-center items-center flex-1">
@@ -600,9 +829,9 @@ export default function UtilityWindow({
                     </div>
                   )
                 ) : (
-                  <div className="flex justify-center items-center h-[80%] w-full">
-                    <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-[300px] h-[100px] flex justify-center items-center p-4">
-                      <div className="flex items-center gap-2">
+                  <div className="flex justify-center items-center h-[80%] w-full px-4">
+                    <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-full h-[100px] flex justify-center items-center p-4">
+                      <div className="flex items-center justify-center gap-2 w-full">
                         <span className="text-white/50 text-sm">FROM</span>
                         <input
                           type="number"
@@ -630,11 +859,86 @@ export default function UtilityWindow({
                     </div>
                   </div>
                 )
+              ) : mode === "filterizer" ? (
+                filteredGames.length > 0 ? (
+                  <div className="p-4 h-full overflow-y-auto pb-6 w-full">
+                    <div className="space-y-4 w-full">
+                      <h3 className="text-white font-semibold">
+                        Filtered Games
+                      </h3>
+                      {showFilteredGames ? (
+                        filteredGames.map((game) => (
+                          <div
+                            key={game.fixture_id}
+                            className="p-3 bg-black/30 border border-white/20 rounded-lg w-full"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <LazyImage
+                                  src={game.league_logo}
+                                  alt={game.league_name}
+                                  className="w-5 h-5"
+                                />
+                                <span className="text-xs text-white/70">
+                                  {game.league_name}
+                                </span>
+                              </div>
+                              <div className="text-xs text-white/50">
+                                {new Date(game.date).toLocaleDateString()}
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1 text-xs">
+                                <LazyImage
+                                  src={game.home_team_logo}
+                                  alt={game.home_team}
+                                  className="w-4 h-4"
+                                />
+                                <span className="text-white truncate max-w-[80px]">
+                                  {game.home_team}
+                                </span>
+                              </div>
+                              <span className="text-white/50 text-xs">vs</span>
+                              <div className="flex items-center gap-1 text-xs">
+                                <span className="text-white truncate max-w-[80px]">
+                                  {game.away_team}
+                                </span>
+                                <LazyImage
+                                  src={game.away_team_logo}
+                                  alt={game.away_team}
+                                  className="w-4 h-4"
+                                />
+                              </div>
+                            </div>
+                            {game.ticket_info && (
+                              <div className="mt-2 flex justify-between items-center pt-2 border-t border-white/10">
+                                <span className="text-xs text-white/70">
+                                  {game.ticket_info.label}
+                                </span>
+                                <div className="bg-[#02a875] text-white text-xs px-2 py-1 rounded">
+                                  {game.ticket_info.odd.toFixed(2)}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="flex justify-center items-center h-full">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <OddFilterizerDesktop onFilterGames={handleFilterOdds} />
+                )
               ) : (
-                <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[8px] w-[300px] h-[100px] flex justify-center items-center p-4">
-                  <span className="flex justify-center items-center py-2 px-4 bg-gradient-to-r from-[#03E9A2] to-[#02835B] rounded-[8px] font-extrabold text-[14px] text-white">
-                    Choose a game to analyse
-                  </span>
+                <div className="flex justify-center items-center h-[80%] w-full px-4">
+                  <div className="bg-black/5 border border-white/50 backdrop-blur-sm rounded-[12px] w-full h-[100px] flex justify-center items-center p-4">
+                    <span className="flex justify-center items-center py-2 px-4 bg-gradient-to-r from-[#03E9A2] to-[#02835B] rounded-[8px] font-extrabold text-[14px] text-white">
+                      Choose a game to analyse
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
