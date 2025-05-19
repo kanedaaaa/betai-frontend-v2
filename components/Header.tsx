@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 
 const Logo = () => (
-  <Link href="/" className="flex items-center ">
+  <Link href="/dashboard" className="flex items-center ">
     <Image src="/BetterLogo-nobg.png" alt="Logo" width={60} height={60} />
     <span
       style={{ fontFamily: "Pilat Extended" }}
@@ -87,14 +87,17 @@ const Header = () => {
         }`}
       >
         <nav className="flex flex-col p-6 space-y-6">
-          {["Dashboard", "About"].map((item) => (
+          {[
+            { name: "Dashboard", path: "/dashboard" },
+            { name: "About", path: "/about" },
+          ].map((item) => (
             <Link
-              key={item}
-              href={`/${item.toLowerCase()}`}
+              key={item.name}
+              href={item.path}
               className="text-white text-[18px] leading-[22px] font-normal hover:text-gray-300 transition-colors font-manrope"
               onClick={() => setIsMenuOpen(false)}
             >
-              {item}
+              {item.name}
             </Link>
           ))}
         </nav>

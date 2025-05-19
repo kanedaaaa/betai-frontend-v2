@@ -6,14 +6,21 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "raw.githubusercontent.com",
-        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "github.com",
-        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "backend.betaisports.net",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
       },
     ],
+    formats: ["image/webp"],
   },
 };
 

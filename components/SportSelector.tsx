@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
+import { LazyImage } from "./LazyImage";
 
 const SportSelector = () => {
   const sports = [
@@ -52,11 +53,10 @@ const SportSelector = () => {
           onClick={() => handleSportSelect(sport.id, sport.name)}
         >
           <div className="relative w-[57px] h-[52px]">
-            <Image
+            <LazyImage
               src={`/SportsSelectorIcons/${sport.id}.png`}
               alt={sport.id}
-              width={57}
-              height={52}
+              className="w-full h-full"
             />
           </div>
           <span

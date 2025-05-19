@@ -48,6 +48,35 @@ const GameSkeleton = () => (
   </div>
 );
 
+// Mobile GameSkeleton
+const MobileGameSkeleton = () => (
+  <div className="mb-4 p-4 bg-black rounded-lg border border-[#4D4F5C] animate-pulse">
+    <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded-full bg-[#4D4F5C]" />
+        <div className="h-4 w-24 bg-[#4D4F5C] rounded" />
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-16 bg-[#4D4F5C] rounded" />
+        <div className="h-4 w-24 bg-[#4D4F5C] rounded" />
+      </div>
+    </div>
+    <div className="flex items-center justify-between gap-4">
+      <div className="flex-1 flex items-center gap-2 min-w-0">
+        <div className="w-8 h-8 rounded-full bg-[#4D4F5C]" />
+        <div className="h-4 w-32 bg-[#4D4F5C] rounded" />
+      </div>
+      <div className="flex-shrink-0 px-2">
+        <div className="h-4 w-4 bg-[#4D4F5C] rounded" />
+      </div>
+      <div className="flex-1 flex items-center gap-2 min-w-0 justify-end">
+        <div className="h-4 w-32 bg-[#4D4F5C] rounded" />
+        <div className="w-8 h-8 rounded-full bg-[#4D4F5C]" />
+      </div>
+    </div>
+  </div>
+);
+
 const Game = ({
   leagueId,
   selectedGame,
@@ -101,57 +130,105 @@ const Game = ({
 
   if (!leagueId && !selectedDate && !providedGames) {
     return (
-      <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[673px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+      <>
+        {/* Mobile view with calendar always visible */}
+        <div className="block xl:hidden p-4">
           {onDateSelect && (
             <DateSelector
               selectedDate={new Date()}
               onDateSelect={onDateSelect}
             />
           )}
-          <div className="flex justify-center items-center h-full text-white/50">
-            Select a league or date to view games
+          <div className="flex justify-center items-center h-[200px] text-white/50 text-sm">
+            Select a date to view games
           </div>
         </div>
-      </div>
+
+        {/* Desktop view */}
+        <div className="hidden xl:block">
+          <div className="relative w-[570px] h-[673px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+            {onDateSelect && (
+              <DateSelector
+                selectedDate={new Date()}
+                onDateSelect={onDateSelect}
+              />
+            )}
+            <div className="flex justify-center items-center h-full text-white/50">
+              Select a league or date to view games
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
 
   if (isLoading && !providedGames) {
     return (
-      <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[673px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+      <>
+        {/* Mobile view with calendar always visible during loading */}
+        <div className="block xl:hidden p-4">
           {!leagueId && onDateSelect && selectedDate && (
             <DateSelector
               selectedDate={selectedDate}
               onDateSelect={onDateSelect}
             />
           )}
-          <div className="flex-1 overflow-y-auto">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <GameSkeleton key={index} />
-            ))}
+          {Array.from({ length: 3 }).map((_, index) => (
+            <MobileGameSkeleton key={index} />
+          ))}
+        </div>
+
+        {/* Desktop view */}
+        <div className="hidden xl:block">
+          <div className="relative w-[570px] h-[673px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+            {!leagueId && onDateSelect && selectedDate && (
+              <DateSelector
+                selectedDate={selectedDate}
+                onDateSelect={onDateSelect}
+              />
+            )}
+            <div className="flex-1 overflow-y-auto">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <GameSkeleton key={index} />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (displayGames.length === 0) {
     return (
-      <div className="hidden xl:block">
-        <div className="relative w-[570px] h-[673px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+      <>
+        {/* Mobile view with calendar always visible when no games found */}
+        <div className="block xl:hidden p-4">
           {!leagueId && onDateSelect && selectedDate && (
             <DateSelector
               selectedDate={selectedDate}
               onDateSelect={onDateSelect}
             />
           )}
-          <div className="flex justify-center items-center h-full text-white/50">
+          <div className="flex justify-center items-center h-[200px] text-white/50 text-sm">
             No games found
           </div>
         </div>
-      </div>
+
+        {/* Desktop view */}
+        <div className="hidden xl:block">
+          <div className="relative w-[570px] h-[673px] bg-black/30 backdrop-blur-xl rounded-[12px] border border-white/50 flex flex-col">
+            {!leagueId && onDateSelect && selectedDate && (
+              <DateSelector
+                selectedDate={selectedDate}
+                onDateSelect={onDateSelect}
+              />
+            )}
+            <div className="flex justify-center items-center h-full text-white/50">
+              No games found
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
 
